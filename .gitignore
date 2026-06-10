@@ -34,7 +34,7 @@ yarn-debug.log*
 pnpm-debug.log*
 
 # 后端输出
-backend/outputs/
+backend/outputs/*
 *.tsbuildinfo
 .eslintcache
 
@@ -44,3 +44,6 @@ __screenshots__/
 
 # Vite
 *.timestamp-*-*.mjs
+
+AGENTS.md
+
