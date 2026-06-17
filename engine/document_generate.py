@@ -345,6 +345,7 @@ class AgentState:
         self.rewrite_count: int = 0
         self.finished: bool = False
         self.summary: str = ""
+        self.standards_info: dict | None = None
 
 
 def run_agent(material: str, doc_type: str) -> AgentState:

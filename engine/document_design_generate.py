@@ -490,7 +490,9 @@ def run_agent(material: str, doc_type: str) -> AgentState:
                     data = _search_standards(args)
                     st.standards_info = data
                     summary = data.get("standards_summary", "")
-                    print(f"    [搜索规范] 找到 {data.get("search_results_count", 0)} 条结果，解析 {data.get("parsed_pages_count", 0)} 个页面")
+                    sr = data.get('search_results_count', 0)
+                    pp = data.get('parsed_pages_count', 0)
+                    print(f"    [搜索规范] 找到 {sr} 条结果，解析 {pp} 个页面")
                     if summary:
                         print(f"    [规范摘要]\n{summary}")
                     result_str = json.dumps(data, ensure_ascii=False)
