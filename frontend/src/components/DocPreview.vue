@@ -10,45 +10,55 @@ const props = defineProps({
 const emit = defineEmits(["back", "delete"])
 
 const STEP_LABELS = {
-  searching:   { icon: "🔍", label: "搜索文档规范" },
-  outline:     { icon: "📋", label: "生成大纲" },
-  writing:     { icon: "✍️", label: "生成正文" },
-  scoring:     { icon: "📊", label: "评分文档" },
-  rewriting:   { icon: "🔄", label: "优化重写" },
-  consistency: { icon: "🔗", label: "检查代码一致性" },
-  done:        { icon: "✅", label: "完成" },
+  searching:   { icon: "\uD83D\uDD0D", label: "\u641C\u7D22\u6587\u6863\u89C4\u8303" },
+  outline:     { icon: "\uD83D\uDCCB", label: "\u751F\u6210\u5927\u7EB2" },
+  writing:     { icon: "\u270D\uFE0F", label: "\u751F\u6210\u6B63\u6587" },
+  scoring:     { icon: "\uD83D\uDCCA", label: "\u8BC4\u5206\u6587\u6863" },
+  rewriting:   { icon: "\uD83D\uDD04", label: "\u4F18\u5316\u91CD\u5199" },
+  consistency: { icon: "\uD83D\uDD17", label: "\u68C0\u67E5\u4EE3\u7801\u4E00\u81F4\u6027" },
+  done:        { icon: "\u2705", label: "\u5B8C\u6210" },
 }
 
 const timeline = computed(() => {
-  const steps = props.progressSteps || []
-  const map = {}
-  const seenOrder = []
+  const events = props.progressSteps || []
+  const entries = []
+  let uid = 0
 
-  for (const e of steps) {
+  for (const e of events) {
     const key = e.step
     if (!STEP_LABELS[key]) continue
-    if (!map[key]) {
-      map[key] = { ...STEP_LABELS[key], key, status: "pending", details: [] }
-      seenOrder.push(key)
-    }
-    const entry = map[key]
+
     if (e.status === "running") {
-      entry.status = "running"
-      if (e.detail) {
-        // 同一条 detail 不重复添加
-        if (!entry.details.includes(e.detail)) {
-          entry.details.push(e.detail)
+      let last = null
+      for (let i = entries.length - 1; i >= 0; i--) {
+        if (entries[i].key === key) { last = entries[i]; break }
+      }
+
+      if (!last || last.status === "done") {
+        uid++
+        const entry = { ...STEP_LABELS[key], key, status: "running", details: [], _id: uid }
+        if (e.detail) entry.details.push(e.detail)
+        entries.push(entry)
+      } else {
+        if (e.detail && !last.details.includes(e.detail)) {
+          last.details.push(e.detail)
         }
       }
     } else if (e.status === "done") {
-      entry.status = "done"
+      for (let i = entries.length - 1; i >= 0; i--) {
+        if (entries[i].key === key && entries[i].status === "running") {
+          entries[i].status = "done"
+          break
+        }
+      }
     }
   }
 
-  // 按固定顺序排列，但只有出现过的才显示
-  const order = ["searching", "outline", "writing", "scoring", "consistency", "rewriting", "done"]
-  return order.filter(k => map[k]).map(k => map[k])
+  return entries
 })
+
+const doneCount = computed(() => timeline.value.filter(t => t.status === "done").length)
+const totalCount = computed(() => timeline.value.length)
 
 const html  = computed(() => props.task.result_md ? marked(props.task.result_md) : "")
 const dlUrl = computed(() => getDownloadUrl(props.task.id))
@@ -56,43 +66,53 @@ const dlUrl = computed(() => getDownloadUrl(props.task.id))
 
 <template>
   <div class="dv">
-    <!-- 步骤时间线（running / pending 时显示） -->
     <div v-if="(task.status === 'running' || task.status === 'pending') && timeline.length > 0" class="tl-wrap">
-      <div class="tl-inner">
-        <div v-for="(item, i) in timeline" :key="item.key + '-' + i" class="tl-row">
-          <!-- 圆点 + 竖线 -->
-          <div class="tl-gutter">
-            <div :class="['tl-dot', 'tl-dot--' + item.status]">
-              <span v-if="item.status === 'done'" class="tl-check">✓</span>
-              <span v-else-if="item.status === 'running'" class="tl-spin"></span>
-            </div>
-            <div v-if="i < timeline.length - 1" class="tl-line"></div>
+      <div class="tl-card">
+        <div class="tl-header">
+          <div class="tl-header-left">
+            <span class="tl-header-icon">⚙️</span>
+            <span class="tl-header-title">文档生成中</span>
           </div>
-          <!-- 内容 -->
-          <div class="tl-content">
-            <div :class="['tl-label', { 'tl-label--active': item.status === 'running' }]">
-              {{ item.icon }} {{ item.label }}
+          <span class="tl-header-count">{{ doneCount }}/{{ totalCount }}</span>
+        </div>
+
+        <div class="tl-list">
+          <div v-for="(item, i) in timeline" :key="item._id" class="tl-row">
+            <div class="tl-gutter">
+              <div :class="['tl-dot', 'tl-dot--' + item.status]">
+                <span v-if="item.status === 'done'" class="tl-check">✓</span>
+                <span v-else-if="item.status === 'running'" class="tl-spin"></span>
+              </div>
+              <div v-if="i &lt; timeline.length - 1" :class="['tl-line', 'tl-line--' + item.status]"></div>
             </div>
-            <div v-for="(d, di) in item.details" :key="di" class="tl-detail">{{ d }}</div>
+            <div class="tl-content">
+              <div :class="['tl-label', 'tl-label--' + item.status]">
+                <span class="tl-label-icon">{{ item.icon }}</span>
+                <span>{{ item.label }}</span>
+              </div>
+              <div v-for="(d, di) in item.details" :key="di" class="tl-detail">{{ d }}</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- pending 且无步骤时，显示排队提示 -->
+    <div v-else-if="task.status === 'running'" class="banner s-run">
+      <span class="spin"></span>
+      <span class="banner-text">AI 正在生成文档，预计 1-2 分钟…</span>
+    </div>
+
     <div v-else-if="task.status === 'pending'" class="banner s-pend">
       <span class="banner-icon">⏳</span>
       <span class="banner-text">任务已提交，正在排队…</span>
     </div>
 
-    <!-- 失败 -->
     <div v-if="task.status === 'failed'" class="banner s-fail">
       <span class="banner-icon">❌</span>
       <span class="banner-text">文档生成失败</span>
       <span class="banner-err">：{{ task.error }}</span>
     </div>
 
-    <!-- 失败操作栏 -->
     <div v-if="task.status === 'failed'" class="bar">
       <div class="bar-info">
         <span class="bar-icon">❌</span>
@@ -104,7 +124,6 @@ const dlUrl = computed(() => getDownloadUrl(props.task.id))
       </div>
     </div>
 
-    <!-- 完成 -->
     <template v-if="task.status === 'completed'">
       <div class="bar">
         <div class="bar-info">
@@ -134,50 +153,96 @@ const dlUrl = computed(() => getDownloadUrl(props.task.id))
 <style scoped>
 .dv { min-height: 100%; display: flex; flex-direction: column }
 
-/* ================================================================
-   步骤时间线
-   ================================================================ */
 .tl-wrap {
   padding: 32px 40px;
   flex: 1;
+  display: flex;
+  justify-content: center;
 }
-.tl-inner {
-  max-width: 520px;
-  margin: 0 auto;
+.tl-card {
+  width: 100%;
+  max-width: 540px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.04);
+  overflow: hidden;
+  align-self: flex-start;
 }
+
+.tl-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  background: linear-gradient(135deg, #f8faff 0%, #eef2ff 100%);
+  border-bottom: 1px solid #e0e7ff;
+}
+.tl-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.tl-header-icon { font-size: 20px }
+.tl-header-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #3730a3;
+  letter-spacing: -0.2px;
+}
+.tl-header-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6366f1;
+  background: #eef2ff;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.tl-list { padding: 12px 24px 24px }
+
 .tl-row {
   display: flex;
-  gap: 16px;
-  min-height: 48px;
+  gap: 14px;
+  min-height: 52px;
 }
+
 .tl-gutter {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 24px;
+  width: 28px;
   flex-shrink: 0;
 }
 .tl-dot {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1;
 }
 .tl-dot--pending {
-  background: #f1f5f9;
+  background: #fff;
   border: 2px solid #e2e8f0;
 }
 .tl-dot--running {
   background: #dbeafe;
   border: 2px solid #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+  animation: dotPulse 2s ease-in-out infinite;
+}
+@keyframes dotPulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12); }
+  50%      { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.04); }
 }
 .tl-dot--done {
   background: #10b981;
   border: 2px solid #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
 }
 .tl-check {
   color: #fff;
@@ -194,56 +259,86 @@ const dlUrl = computed(() => getDownloadUrl(props.task.id))
   animation: rotate .7s linear infinite;
 }
 @keyframes rotate { to { transform: rotate(360deg) } }
+
 .tl-line {
   width: 2px;
   flex: 1;
-  min-height: 20px;
+  min-height: 24px;
   background: #e2e8f0;
   margin: 4px 0;
-  transition: background 0.3s;
+  transition: background 0.5s ease;
 }
-.tl-content {
-  padding-bottom: 20px;
-  min-width: 0;
+.tl-line--done {
+  background: linear-gradient(to bottom, #10b981, #10b981);
 }
-.tl-label {
-  font-size: 15px;
-  font-weight: 600;
-  color: #94a3b8;
-  transition: color 0.3s;
+.tl-line--running {
+  background: linear-gradient(to bottom, #10b981 0%, #3b82f6 50%, #e2e8f0 100%);
+  background-size: 100% 200%;
+  animation: lineFlow 1.5s ease-in-out infinite;
 }
-.tl-label--active {
-  color: #1e40af;
-  animation: stepFadeIn 0.35s ease;
-}
-@keyframes stepFadeIn {
-  from { opacity: 0; transform: translateX(-6px) }
-  to   { opacity: 1; transform: translateX(0) }
-}
-.tl-detail {
-  font-size: 13px;
-  color: #64748b;
-  margin-top: 4px;
-  padding: 4px 10px;
-  background: #f8fafc;
-  border-radius: 6px;
-  display: inline-block;
-  animation: stepFadeIn 0.35s ease;
+@keyframes lineFlow {
+  0%, 100% { background-position: 0 0; }
+  50%      { background-position: 0 50%; }
 }
 
-/* ================================================================
-   Banner（pending / failed 保留）
-   ================================================================ */
+.tl-content {
+  padding-bottom: 8px;
+  min-width: 0;
+  flex: 1;
+}
+.tl-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.35s ease;
+}
+.tl-label-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.tl-label--running {
+  color: #1e3a5f;
+}
+.tl-label--done {
+  color: #475569;
+}
+
+.tl-detail {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 6px;
+  margin-left: 0;
+  padding: 5px 12px;
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 8px;
+  display: inline-block;
+  line-height: 1.5;
+  animation: detailIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes detailIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Banner */
 .banner { display: flex; align-items: center; gap: 12px; padding: 20px 28px; font-size: 14px }
 .banner-icon { font-size: 22px; flex-shrink: 0 }
 .banner-text { font-weight: 500 }
+.s-run  { background: linear-gradient(135deg, #eff6ff, #dbeafe); color: #1e40af; border-bottom: 1px solid #bfdbfe }
 .s-pend { background: linear-gradient(135deg, #fffbeb, #fef3c7); color: #92400e; border-bottom: 1px solid #fde68a }
 .s-fail { background: linear-gradient(135deg, #fef2f2, #fee2e2); color: #991b1b; border-bottom: 1px solid #fecaca }
 .banner-err { font-size: 13px; word-break: break-all }
+.spin {
+  width: 22px; height: 22px; flex-shrink: 0;
+  border: 2.5px solid #bfdbfe; border-top-color: #3b82f6;
+  border-radius: 50%; animation: rotate .7s linear infinite;
+}
 
-/* ================================================================
-   操作栏 & Markdown（完成状态，不变）
-   ================================================================ */
+/* Bar */
 .bar {
   display: flex; align-items: center; justify-content: space-between;
   padding: 20px 28px;
@@ -273,9 +368,7 @@ const dlUrl = computed(() => getDownloadUrl(props.task.id))
 .act--del { background: #fff; color: #dc2626; border: 1px solid #fecaca }
 .act--del:hover { background: #fef2f2 }
 
-/* ================================================================
-   Markdown
-   ================================================================ */
+/* Markdown */
 .md {
   max-width: 860px; margin: 0 auto; width: 100%;
   padding: 32px 28px 60px;
@@ -320,15 +413,16 @@ const dlUrl = computed(() => getDownloadUrl(props.task.id))
 .md :deep(img) { max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,.06) }
 .md :deep(strong) { color: #0f172a; font-weight: 700 }
 
-/* ================================================================
-   手机端
-   ================================================================ */
 @media (max-width: 640px) {
   .md :deep(table) { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch }
   .md { padding: 24px 16px 48px; font-size: 14px }
   .bar { padding: 16px 20px }
   .bar-acts { width: 100% }
   .banner { padding: 16px 20px; font-size: 13px }
-  .tl-wrap { padding: 24px 20px }
+  .tl-wrap { padding: 16px 12px }
+  .tl-card { border-radius: 12px }
+  .tl-list { padding: 8px 16px 20px }
+  .tl-header { padding: 14px 16px }
+  .tl-label { font-size: 13px }
 }
 </style>

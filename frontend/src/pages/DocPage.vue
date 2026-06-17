@@ -106,9 +106,7 @@ function fmt(t) {
 </script>
 
 <template>
-  <!-- ================ 桌面 ================ -->
   <div class="d-shell">
-    <!-- 左栏 -->
     <aside class="d-side">
       <div class="d-side-head">
         <div class="d-side-brand">
@@ -120,9 +118,7 @@ function fmt(t) {
           新建
         </button>
       </div>
-
       <div class="d-divider"></div>
-
       <div class="d-list">
         <div
           v-for="t in tasks" :key="t.id"
@@ -131,34 +127,29 @@ function fmt(t) {
         >
           <span class="d-dot" :style="{ background: STATUS[t.status]?.dot }"></span>
           <div class="d-info">
-            <span class="d-name">{{ t.custom_name || t.doc_type || '未命名' }}</span>
+            <span class="d-name">{{ t.custom_name || t.doc_type || '\u672A\u547D\u540D' }}</span>
             <span class="d-doc-type">{{ t.doc_type }}</span>
           </div>
           <span class="d-badge" :style="{ color: STATUS[t.status]?.dot }">
             {{ STATUS[t.status]?.label }}
           </span>
         </div>
-
         <div v-if="count === 0" class="d-empty">
           <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="6" y="8" width="28" height="24" rx="4" stroke="#cbd5e1" stroke-width="1.5"/><line x1="13" y1="17" x2="27" y2="17" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round"/><line x1="13" y1="22" x2="23" y2="22" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round"/></svg>
           <span>暂无任务</span>
         </div>
       </div>
-
       <div class="d-foot">{{ count }} 个任务</div>
     </aside>
-
-    <!-- 右栏 -->
     <main class="d-main">
       <div v-if="view === 'home'" class="d-welcome">
         <div class="d-welcome-icon">
           <svg width="56" height="56" viewBox="0 0 56 56" fill="none"><rect x="8" y="12" width="40" height="32" rx="5" stroke="#cbd5e1" stroke-width="2"/><path d="M20 4v6M36 4v6M8 22h40" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round"/><line x1="18" y1="30" x2="38" y2="30" stroke="#e2e8f0" stroke-width="3" stroke-linecap="round"/><line x1="18" y1="36" x2="32" y2="36" stroke="#e2e8f0" stroke-width="3" stroke-linecap="round"/></svg>
         </div>
         <h2>选择一个任务</h2>
-        <p>从左侧列表选择任务查看详情，或点击「新建」创建文档</p>
+        <p>从左侧列表选择任务查看详情，或点击新建创建文档</p>
       </div>
-      <DocGenerator v-if="view === 'create'" @task-created="onCreated" :allowed-types='["需求规格说明书","软件设计文档"]' />
-
+      <DocGenerator v-if="view === 'create'" @task-created="onCreated" :allowed-types='["\u9700\u6C42\u89C4\u683C\u8BF4\u660E\u4E66","\u8F6F\u4EF6\u8BBE\u8BA1\u6587\u6863"]' />
       <DocPreview
         v-if="view === 'detail' && active"
         :task="active"
@@ -169,13 +160,14 @@ function fmt(t) {
     </main>
   </div>
 
-  <!-- ================ 手机 ================ -->
   <div class="m-shell">
     <div class="m-bar">
       <span class="m-bar-logo">📄</span>
       <span v-if="view === 'home'" class="m-bar-title">Doc-Agent</span>
-      <span v-else class="m-bar-title">{{ active?.doc_type || '文档生成' }}</span>
-      <span class="m-bar-spacer"></span>
+      <span v-else class="m-bar-title">{{ active?.doc_type || '\u6587\u6863\u751F\u6210' }}</span>
+      <button v-if="view === 'home'" class="m-bar-btn" @click="goCreate">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
       <button
         v-if="view !== 'home'"
         class="m-bar-btn"
@@ -184,7 +176,6 @@ function fmt(t) {
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       </button>
     </div>
-
     <div class="m-body">
       <div v-if="view === 'home'" class="m-list">
         <div
@@ -194,7 +185,7 @@ function fmt(t) {
           @click="selectTask(t.id)"
         >
           <div class="m-card-top">
-            <span class="m-card-name">{{ t.custom_name || t.doc_type || '未命名' }}</span>
+            <span class="m-card-name">{{ t.custom_name || t.doc_type || '\u672A\u547D\u540D' }}</span>
             <span class="m-card-badge" :style="{ color: STATUS[t.status]?.dot }">
               {{ STATUS[t.status]?.label }}
             </span>
@@ -206,12 +197,10 @@ function fmt(t) {
         </div>
         <div v-if="count === 0" class="m-empty">
           <p>暂无任务</p>
-          <span>点击下方按钮创建</span>
+          <span>点击上方 + 创建</span>
         </div>
       </div>
-
-      <DocGenerator v-if="view === 'create'" @task-created="onCreated" :allowed-types='["需求规格说明书","软件设计文档"]' />
-
+      <DocGenerator v-if="view === 'create'" @task-created="onCreated" :allowed-types='["\u9700\u6C42\u89C4\u683C\u8BF4\u660E\u4E66","\u8F6F\u4EF6\u8BBE\u8BA1\u6587\u6863"]' />
       <DocPreview
         v-if="view === 'detail' && active"
         :task="active"
@@ -288,7 +277,6 @@ function fmt(t) {
   border-radius:8px;
 }
 .m-bar-btn:active { background:#f1f5f9 }
-.m-bar-spacer { width:40px }
 .m-body { flex:1; overflow-y:auto }
 .m-list { padding:12px }
 .m-card {

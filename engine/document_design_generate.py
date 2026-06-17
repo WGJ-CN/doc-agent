@@ -353,7 +353,7 @@ def _score_document(document: str, material: str, doc_type: str) -> dict:
         f"===== 待评分文档 =====\n{doc_preview}\n===== 结束 ====="
     )
 
-    raw = call_deepseek(system_prompt, "请评分。", temperature=0.2, max_tokens=1024, json_mode=True)
+    raw = call_deepseek(system_prompt, "请评分。", temperature=0.2, max_tokens=4096, json_mode=True)
     try:
         return json.loads(raw)
     except json.JSONDecodeError:
@@ -370,8 +370,9 @@ def _check_code_consistency(document: str, material: str) -> dict:
         "检查要点：\n"
         "1. 架构描述（分层、模块划分）是否与代码组织结构一致\n"
         "2. 文档中提到的模块、类、接口是否在代码中有对应实现\n"
-        "3. 数据结构描述是否与代码中的类/结构体定义大致一致\n"
-        "4. 数据存储设计是否与代码中的存储实现大致一致\n\n"
+        "3. 数据结构描述是否与代码中的类/结构体定义一致\n"
+        "4. 数据存储设计是否与代码中的存储实现一致\n\n"
+        "5. 是否存在文档描述了但代码中不存在的内容——即编造或虚构的设计元素\n\n"
         "返回纯 JSON：\n"
         '{"is_aligned": <true/false>, "issues": "<不一致的具体问题>", '
         '"suggestions": "<修复建议>"}\n\n'
@@ -379,7 +380,7 @@ def _check_code_consistency(document: str, material: str) -> dict:
         f"===== 设计文档 =====\n{doc_preview}\n===== 结束 ====="
     )
 
-    raw = call_deepseek(system_prompt, "请检查一致性。", temperature=0.2, max_tokens=1024, json_mode=True)
+    raw = call_deepseek(system_prompt, "请检查一致性。", temperature=0.2, max_tokens=4096, json_mode=True)
     try:
         return json.loads(raw)
     except json.JSONDecodeError:
@@ -524,7 +525,7 @@ def run_agent(material: str, doc_type: str) -> AgentState:
                         if dims:
                             print(f"    完整性:{dims.get('completeness','-')} 准确性:{dims.get('accuracy','-')} 结构性:{dims.get('structure','-')} 可读性:{dims.get('readability','-')} 格式:{dims.get('format','-')}")
                         if st.feedback:
-                            print(f"    [反馈] {st.feedback[:200]}")
+                            print(f"    [反馈] {st.feedback}")
                         result_str = json.dumps(score_data, ensure_ascii=False)
 
                 elif name == "check_code_consistency":
@@ -537,7 +538,7 @@ def run_agent(material: str, doc_type: str) -> AgentState:
                         st.alignment_issues = check_data.get("issues", "")
                         print(f"    [一致性] 与代码一致: {st.is_aligned}")
                         if st.alignment_issues:
-                            print(f"    [不一致问题] {st.alignment_issues[:200]}")
+                            print(f"    [不一致问题] {st.alignment_issues}")
                         result_str = json.dumps(check_data, ensure_ascii=False)
 
                 elif name == "rewrite_document":
@@ -643,9 +644,9 @@ def generate_design_for_topic(material_file: str, output_md: str, doc_type: str 
         raise RuntimeError("Agent 未生成文档")
 
     if st.feedback:
-        print(f"   评分反馈：{st.feedback[:200]}...")
+        print(f"   评分反馈：{st.feedback}...")
     if st.alignment_issues:
-        print(f"   一致性问题：{st.alignment_issues[:200]}...")
+        print(f"   一致性问题：{st.alignment_issues}...")
 
 
 # ================= 主入口 =================

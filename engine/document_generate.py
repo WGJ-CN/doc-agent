@@ -325,7 +325,7 @@ def _score_document(document: str, material: str, doc_type: str) -> dict:
         f"===== 待评分文档 =====\n{doc_preview}\n===== 文档结束 ====="
     )
 
-    raw = call_deepseek(system_prompt, "请评分。", temperature=0.2, max_tokens=1024, json_mode=True)
+    raw = call_deepseek(system_prompt, "请评分。", temperature=0.2, max_tokens=4096, json_mode=True)
     try:
         return json.loads(raw)
     except json.JSONDecodeError:
@@ -463,7 +463,7 @@ def run_agent(material: str, doc_type: str) -> AgentState:
                         if dims:
                             print(f"    完整性:{dims.get('completeness','-')} 准确性:{dims.get('accuracy','-')} 结构性:{dims.get('structure','-')} 可读性:{dims.get('readability','-')} 格式:{dims.get('format','-')}")
                         if st.feedback:
-                            print(f"    [反馈] {st.feedback[:200]}")
+                            print(f"    [反馈] {st.feedback}")
                         result_str = json.dumps(score_data, ensure_ascii=False)
                         
                 elif name == "rewrite_document":
@@ -549,7 +549,7 @@ def generate_srs_for_topic(material_file: str, output_md: str, doc_type: str = "
         raise RuntimeError("Agent 未生成文档")
     
     if st.feedback:
-        print(f"   评分反馈：{st.feedback[:200]}...")
+        print(f"   评分反馈：{st.feedback}...")
 
 
 # ================= 主入口 =================
