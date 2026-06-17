@@ -90,8 +90,8 @@ function fmt(t) {
         >
           <span class="d-dot" :style="{ background: STATUS[t.status]?.dot }"></span>
           <div class="d-info">
-            <span class="d-name">{{ t.doc_type || '未命名' }}</span>
-            <span class="d-time">{{ fmt(t.created_at) }}</span>
+            <span class="d-name">{{ t.custom_name || t.doc_type || '未命名' }}</span>
+            <span class="d-doc-type">{{ t.doc_type }}</span>
           </div>
           <span class="d-badge" :style="{ color: STATUS[t.status]?.dot }">
             {{ STATUS[t.status]?.label }}
@@ -155,13 +155,13 @@ function fmt(t) {
         >
           <div class="m-card-top">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            <span class="m-card-name">{{ t.doc_type || '未命名' }}</span>
+            <span class="m-card-name">{{ t.custom_name || t.doc_type || '未命名' }}</span>
             <span class="m-card-badge" :style="{ color: STATUS[t.status]?.dot }">
               {{ STATUS[t.status]?.label }}
             </span>
           </div>
           <div class="m-card-bot">
-            <span>#{{ t.id?.slice(0,8) }}</span>
+            <span class="m-card-type">{{ t.doc_type }}</span>
             <span>{{ fmt(t.created_at) }}</span>
           </div>
         </div>
@@ -229,6 +229,7 @@ function fmt(t) {
 .d-info { display:flex; flex-direction:column; min-width:0; flex:1 }
 .d-name { font-size:13px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
 .d-time { font-size:11px; color:var(--text-muted); margin-top:1px }
+.d-doc-type { font-size:11px; color:var(--text-muted); margin-top:1px }
 .d-badge{ font-size:11px; font-weight:600; flex-shrink:0 }
 
 .d-empty {
@@ -287,6 +288,7 @@ function fmt(t) {
 .m-card-name { font-size:14px; font-weight:600; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
 .m-card-badge{ font-size:12px; font-weight:600; flex-shrink:0 }
 
+.m-card-type { font-size:12px; color:var(--text-muted) }
 .m-card-bot { display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); padding-left:24px }
 
 .m-empty { display:flex; flex-direction:column; align-items:center; gap:8px; padding:60px 20px; color:var(--text-muted) }

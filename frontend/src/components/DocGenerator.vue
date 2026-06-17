@@ -17,7 +17,8 @@ const browsing    = ref(false)
 const availableTypes = computed(() => props.allowedTypes)
 
 const isDesignDoc = computed(() => docType.value === "软件设计文档")
-const isTestCase  = computed(() => docType.value === "测试用例")
+const isTestCase   = computed(() => docType.value === "测试用例")
+const isSingleType = computed(() => availableTypes.value.length === 1)
 
 // 已完成任务列表（测试用例模式用）
 const completedTasks = ref([])
@@ -28,7 +29,7 @@ watch(docType, (val) => {
   if (val === "测试用例") {
     fetchCompletedTasks()
   }
-})
+}, { immediate: true })
 
 watch(() => props.allowedTypes, (types) => {
   if (types && types.length > 0 && !types.includes(docType.value)) {
@@ -41,7 +42,7 @@ async function fetchCompletedTasks() {
   try {
     const r = await listTasks(1, 50)
     completedTasks.value = (r.data.items || []).filter(
-      t => t.status === "completed"
+      t => t.status === "completed" && t.doc_type !== "测试用例"
     )
   } catch (e) {
     // ignore
@@ -128,7 +129,7 @@ async function submit() {
         <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="5" y="7" width="26" height="22" rx="4" stroke="#4f46e5" stroke-width="2"/><line x1="11" y1="15" x2="25" y2="15" stroke="#c7d2fe" stroke-width="2" stroke-linecap="round"/><line x1="11" y1="20" x2="21" y2="20" stroke="#c7d2fe" stroke-width="2" stroke-linecap="round"/></svg>
       </div>
       <div>
-        <h1>新建文档生成任务</h1>
+        <h1>{{ isSingleType ? '新建' + availableTypes[0] + '任务' : '新建文档生成任务' }}</h1>
         <p v-if="isDesignDoc">选择项目文件夹自动扫描代码，AI 生成软件设计文档</p>
         <p v-else-if="isTestCase">粘贴需求文档+设计文档，AI 自动生成白盒测试用例（覆盖全路径）</p>
         <p v-else>粘贴项目素材，AI 自动生成需求规格说明书</p>
@@ -138,8 +139,9 @@ async function submit() {
     <div class="cols">
       <div class="col-form">
         <div class="field">
-          <label>文档类型</label>
-          <div class="select-wrap">
+          <label>{{ isSingleType ? '任务类型' : '文档类型' }}</label>
+          <div v-if="isSingleType" class="type-static">{{ availableTypes[0] }}</div>
+          <div v-else class="select-wrap">
             <select v-model="docType">
               <option v-for="t in availableTypes" :key="t" :value="t">{{ t }}</option>
             </select>
@@ -148,7 +150,7 @@ async function submit() {
         </div>
 
         <div class="field">
-          <label>文档名称（可选，默认使用文档类型名）</label>
+          <label>{{ isSingleType ? '任务名称（可选）' : '文档名称（可选，默认使用文档类型名）' }}</label>
           <input
             v-model="customName"
             type="text"
@@ -311,6 +313,11 @@ select:focus { outline: none; border-color: var(--primary, #4f46e5); box-shadow:
 .path-input:focus { outline: none; border-color: var(--primary, #4f46e5); box-shadow: 0 0 0 3px rgba(79,70,229,.08); background: #fff }
 .path-input::placeholder { color: #cbd5e1; font-family: inherit }
 
+.type-static {
+  padding: 13px 16px; font-size: 14px; font-weight: 500;
+  color: var(--text, #0f172a); background: #f8fafc;
+  border: 1px solid var(--border, #e2e8f0); border-radius: 10px;
+}
 .name-input {
   width: 100%; padding: 13px 16px;
   border: 1.5px solid var(--border, #e2e8f0); border-radius: 10px;
@@ -467,7 +474,12 @@ textarea::placeholder { color: #cbd5e1 }
     background: #f8fafc;
   }
 
-  .name-input {
+  .type-static {
+  padding: 13px 16px; font-size: 14px; font-weight: 500;
+  color: var(--text, #0f172a); background: #f8fafc;
+  border: 1px solid var(--border, #e2e8f0); border-radius: 10px;
+}
+.name-input {
     padding: 13px 16px; font-size: 14px;
     min-height: 50px; border-radius: 10px;
     background: #f8fafc;

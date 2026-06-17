@@ -91,7 +91,7 @@ function fmt(t) {
           <span class="d-dot" :style="{ background: STATUS[t.status]?.dot }"></span>
           <div class="d-info">
             <span class="d-name">{{ t.custom_name || t.doc_type || '未命名' }}</span>
-            <span class="d-time">{{ fmt(t.created_at) }}</span>
+            <span class="d-doc-type">{{ t.doc_type }}</span>
           </div>
           <span class="d-badge" :style="{ color: STATUS[t.status]?.dot }">
             {{ STATUS[t.status]?.label }}
@@ -113,7 +113,7 @@ function fmt(t) {
         <div class="d-welcome-icon">
           <svg width="56" height="56" viewBox="0 0 56 56" fill="none"><rect x="8" y="12" width="40" height="32" rx="5" stroke="#cbd5e1" stroke-width="2"/><path d="M20 4v6M36 4v6M8 22h40" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round"/><line x1="18" y1="30" x2="38" y2="30" stroke="#e2e8f0" stroke-width="3" stroke-linecap="round"/><line x1="18" y1="36" x2="32" y2="36" stroke="#e2e8f0" stroke-width="3" stroke-linecap="round"/></svg>
         </div>
-        <h2>生成白盒测试用例</h2>
+        <h2>生成测试用例</h2>
         <p>从左侧列表选择测试任务查看详情，或点击「新建」粘贴需求文档+设计文档，AI 自动生成全覆盖测试用例</p>
       </div>
       <DocGenerator v-if="view === 'create'" @task-created="onCreated" :allowed-types='["测试用例"]' />
@@ -155,6 +155,7 @@ function fmt(t) {
               </span>
             </div>
             <div class="m-card-bot">
+              <span class="m-card-type">{{ t.doc_type }}</span>
               <span>{{ fmt(t.created_at) }}</span>
             </div>
           </div>
@@ -220,6 +221,7 @@ function fmt(t) {
 .d-info { display:flex; flex-direction:column; min-width:0; flex:1 }
 .d-name { font-size:13px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
 .d-time { font-size:11px; color:var(--text-muted); margin-top:1px }
+.d-doc-type { font-size:11px; color:var(--text-muted); margin-top:1px }
 .d-badge{ font-size:11px; font-weight:600; flex-shrink:0 }
 
 .d-empty {
@@ -278,6 +280,7 @@ function fmt(t) {
 .m-card-name { font-size:14px; font-weight:600; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
 .m-card-badge{ font-size:12px; font-weight:600; flex-shrink:0 }
 
+.m-card-type { font-size:12px; color:var(--text-muted) }
 .m-card-bot { display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); padding-left:24px }
 
 .m-empty { display:flex; flex-direction:column; align-items:center; gap:8px; padding:60px 20px; color:var(--text-muted) }
