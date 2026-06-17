@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from "vue"
+import { ref, computed } from "vue"
 import { marked } from "marked"
 import { getDownloadUrl } from "../api.js"
 
@@ -9,14 +9,20 @@ const props = defineProps({
 })
 const emit = defineEmits(["back", "delete"])
 
+const expandedId = ref(null)
+
+function toggleExpand(id) {
+  expandedId.value = expandedId.value === id ? null : id
+}
+
 const STEP_LABELS = {
-  searching:   { icon: "\uD83D\uDD0D", label: "\u641C\u7D22\u6587\u6863\u89C4\u8303" },
-  outline:     { icon: "\uD83D\uDCCB", label: "\u751F\u6210\u5927\u7EB2" },
-  writing:     { icon: "\u270D\uFE0F", label: "\u751F\u6210\u6B63\u6587" },
-  scoring:     { icon: "\uD83D\uDCCA", label: "\u8BC4\u5206\u6587\u6863" },
-  rewriting:   { icon: "\uD83D\uDD04", label: "\u4F18\u5316\u91CD\u5199" },
-  consistency: { icon: "\uD83D\uDD17", label: "\u68C0\u67E5\u4EE3\u7801\u4E00\u81F4\u6027" },
-  done:        { icon: "\u2705", label: "\u5B8C\u6210" },
+  searching:   { icon: "🔍", label: "搜索文档规范" },
+  outline:     { icon: "📋", label: "生成大纲" },
+  writing:     { icon: "✍️", label: "生成正文" },
+  scoring:     { icon: "📊", label: "评分文档" },
+  rewriting:   { icon: "🔄", label: "优化重写" },
+  consistency: { icon: "🔗", label: "检查代码一致性" },
+  done:        { icon: "✅", label: "完成" },
 }
 
 const timeline = computed(() => {
@@ -77,7 +83,12 @@ const dlUrl = computed(() => getDownloadUrl(props.task.id))
         </div>
 
         <div class="tl-list">
-          <div v-for="(item, i) in timeline" :key="item._id" class="tl-row">
+          <div
+            v-for="(item, i) in timeline"
+            :key="item._id"
+            :class="['tl-row', { 'tl-row--expandable': item.details.length > 1 }]"
+            @click="item.details.length > 1 && toggleExpand(item._id)"
+          >
             <div class="tl-gutter">
               <div :class="['tl-dot', 'tl-dot--' + item.status]">
                 <span v-if="item.status === 'done'" class="tl-check">✓</span>
@@ -89,8 +100,19 @@ const dlUrl = computed(() => getDownloadUrl(props.task.id))
               <div :class="['tl-label', 'tl-label--' + item.status]">
                 <span class="tl-label-icon">{{ item.icon }}</span>
                 <span>{{ item.label }}</span>
+                <span
+                  v-if="item.details.length > 1"
+                  class="tl-chevron"
+                  :class="{ 'tl-chevron--open': expandedId === item._id }"
+                >▸</span>
               </div>
-              <div v-for="(d, di) in item.details" :key="di" class="tl-detail">{{ d }}</div>
+              <div v-for="(d, di) in item.details" :key="di">
+                <div
+                  v-if="di === 0 || expandedId === item._id"
+                  class="tl-detail"
+                  :class="{ 'tl-detail--long': di > 0 }"
+                >{{ d }}</div>
+              </div>
             </div>
           </div>
         </div>
@@ -177,26 +199,10 @@ const dlUrl = computed(() => getDownloadUrl(props.task.id))
   background: linear-gradient(135deg, #f8faff 0%, #eef2ff 100%);
   border-bottom: 1px solid #e0e7ff;
 }
-.tl-header-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+.tl-header-left { display: flex; align-items: center; gap: 10px }
 .tl-header-icon { font-size: 20px }
-.tl-header-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: #3730a3;
-  letter-spacing: -0.2px;
-}
-.tl-header-count {
-  font-size: 13px;
-  font-weight: 600;
-  color: #6366f1;
-  background: #eef2ff;
-  padding: 3px 10px;
-  border-radius: 20px;
-}
+.tl-header-title { font-size: 15px; font-weight: 700; color: #3730a3; letter-spacing: -0.2px }
+.tl-header-count { font-size: 13px; font-weight: 600; color: #6366f1; background: #eef2ff; padding: 3px 10px; border-radius: 20px }
 
 .tl-list { padding: 12px 24px 24px }
 
@@ -204,6 +210,9 @@ const dlUrl = computed(() => getDownloadUrl(props.task.id))
   display: flex;
   gap: 14px;
   min-height: 52px;
+}
+.tl-row--expandable {
+  cursor: pointer;
 }
 
 .tl-gutter {
@@ -214,24 +223,16 @@ const dlUrl = computed(() => getDownloadUrl(props.task.id))
   flex-shrink: 0;
 }
 .tl-dot {
-  width: 28px;
-  height: 28px;
+  width: 28px; height: 28px;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  z-index: 1;
+  position: relative; z-index: 1;
 }
-.tl-dot--pending {
-  background: #fff;
-  border: 2px solid #e2e8f0;
-}
+.tl-dot--pending { background: #fff; border: 2px solid #e2e8f0 }
 .tl-dot--running {
-  background: #dbeafe;
-  border: 2px solid #3b82f6;
+  background: #dbeafe; border: 2px solid #3b82f6;
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
   animation: dotPulse 2s ease-in-out infinite;
 }
@@ -240,37 +241,23 @@ const dlUrl = computed(() => getDownloadUrl(props.task.id))
   50%      { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.04); }
 }
 .tl-dot--done {
-  background: #10b981;
-  border: 2px solid #10b981;
+  background: #10b981; border: 2px solid #10b981;
   box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
 }
-.tl-check {
-  color: #fff;
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1;
-}
+.tl-check { color: #fff; font-size: 13px; font-weight: 700; line-height: 1 }
 .tl-spin {
-  width: 14px;
-  height: 14px;
-  border: 2px solid #93c5fd;
-  border-top-color: #3b82f6;
-  border-radius: 50%;
-  animation: rotate .7s linear infinite;
+  width: 14px; height: 14px;
+  border: 2px solid #93c5fd; border-top-color: #3b82f6;
+  border-radius: 50%; animation: rotate .7s linear infinite;
 }
 @keyframes rotate { to { transform: rotate(360deg) } }
 
 .tl-line {
-  width: 2px;
-  flex: 1;
-  min-height: 24px;
-  background: #e2e8f0;
-  margin: 4px 0;
+  width: 2px; flex: 1; min-height: 24px;
+  background: #e2e8f0; margin: 4px 0;
   transition: background 0.5s ease;
 }
-.tl-line--done {
-  background: linear-gradient(to bottom, #10b981, #10b981);
-}
+.tl-line--done { background: linear-gradient(to bottom, #10b981, #10b981) }
 .tl-line--running {
   background: linear-gradient(to bottom, #10b981 0%, #3b82f6 50%, #e2e8f0 100%);
   background-size: 100% 200%;
@@ -281,36 +268,29 @@ const dlUrl = computed(() => getDownloadUrl(props.task.id))
   50%      { background-position: 0 50%; }
 }
 
-.tl-content {
-  padding-bottom: 8px;
-  min-width: 0;
-  flex: 1;
-}
+.tl-content { padding-bottom: 8px; min-width: 0; flex: 1 }
 .tl-label {
-  font-size: 14px;
-  font-weight: 600;
-  color: #94a3b8;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  font-size: 14px; font-weight: 600; color: #94a3b8;
+  display: flex; align-items: center; gap: 8px;
   transition: color 0.35s ease;
 }
-.tl-label-icon {
-  font-size: 16px;
-  flex-shrink: 0;
+.tl-label-icon { font-size: 16px; flex-shrink: 0 }
+.tl-label--running { color: #1e3a5f }
+.tl-label--done { color: #475569 }
+
+.tl-chevron {
+  margin-left: auto;
+  font-size: 12px;
+  color: #94a3b8;
+  transition: transform 0.2s ease;
 }
-.tl-label--running {
-  color: #1e3a5f;
-}
-.tl-label--done {
-  color: #475569;
+.tl-chevron--open {
+  transform: rotate(90deg);
 }
 
 .tl-detail {
-  font-size: 12px;
-  color: #64748b;
-  margin-top: 6px;
-  margin-left: 0;
+  font-size: 12px; color: #64748b;
+  margin-top: 6px; margin-left: 0;
   padding: 5px 12px;
   background: #f8fafc;
   border: 1px solid #f1f5f9;
@@ -318,6 +298,14 @@ const dlUrl = computed(() => getDownloadUrl(props.task.id))
   display: inline-block;
   line-height: 1.5;
   animation: detailIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  max-width: 100%;
+  word-break: break-word;
+}
+.tl-detail--long {
+  background: #fffbeb;
+  border-color: #fde68a;
+  display: block;
+  white-space: pre-wrap;
 }
 @keyframes detailIn {
   from { opacity: 0; transform: translateY(-6px) scale(0.96); }
@@ -390,18 +378,15 @@ const dlUrl = computed(() => getDownloadUrl(props.task.id))
   width: 100%; table-layout: auto;
   border-collapse: separate; border-spacing: 0;
   margin: 18px 0; font-size: 14px;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px; overflow: hidden;
+  border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden;
   box-shadow: 0 1px 3px rgba(0,0,0,.04);
 }
 .md :deep(th) {
   background: #f1f5f9; font-weight: 600; text-align: left;
-  white-space: nowrap; font-size: 13px;
-  color: #475569; letter-spacing: .3px;
+  white-space: nowrap; font-size: 13px; color: #475569; letter-spacing: .3px;
 }
 .md :deep(th), .md :deep(td) {
-  border-bottom: 1px solid #e2e8f0;
-  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;
   padding: 10px 16px;
 }
 .md :deep(th):last-child, .md :deep(td):last-child { border-right: none }

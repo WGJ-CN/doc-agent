@@ -9,13 +9,11 @@ from app.config import settings
 
 logger = logging.getLogger(__name__)
 
-# ---------- 进度推送基础设施 ----------
 _progress_buffers: dict[str, list] = {}
 _buffers_lock = threading.Lock()
 
 
 def _push_progress(task_id, step, tool, status="running", detail=None):
-    """线程安全地把进度事件追加到回放缓冲区"""
     with _buffers_lock:
         buf = _progress_buffers.get(task_id)
     if buf is not None:
@@ -45,6 +43,11 @@ _CONSISTENCY_RESULT = re.compile(r'\[一致性\]\s*与代码一致:\s*(True|Fals
 _FINAL_SCORE = re.compile(r'最终评分：(\d+)/10.*重写次数：(\d+)')
 _FINAL_SCORE_DESIGN = re.compile(r'最终评分：(\d+)/10.*代码一致：(True|False).*重写次数：(\d+)')
 
+# 长文本详情
+_STANDARDS_SUMMARY = re.compile(r'\[规范摘要\]\n(.+)', re.DOTALL)
+_FEEDBACK = re.compile(r'\[反馈\]\s*(.+)')
+_ALIGNMENT_ISSUES = re.compile(r'\[不一致问题\]\s*(.+)')
+
 
 def _make_progress_writer(task_id, original_write):
     """返回 (write_fn, flush_fn)"""
@@ -71,6 +74,18 @@ def _make_progress_writer(task_id, original_write):
         m = _CONSISTENCY_RESULT.search(s)
         if m:
             return f"代码一致: {m.group(1)}"
+        m = _STANDARDS_SUMMARY.search(s)
+        if m:
+            text = m.group(1).strip()
+            return f"规范内容：{text}"
+        m = _FEEDBACK.search(s)
+        if m:
+            text = m.group(1).strip()
+            return f"反馈：{text}"
+        m = _ALIGNMENT_ISSUES.search(s)
+        if m:
+            text = m.group(1).strip()
+            return f"不一致问题：{text}"
         return None
 
     def write(s):
@@ -107,7 +122,6 @@ def _make_progress_writer(task_id, original_write):
     return write, _flush
 
 
-# ---------- 引擎导入 ----------
 sys.path.insert(0, settings.engine_dir)
 from document_generate import generate_srs_for_topic
 from document_design_generate import generate_design_for_topic
