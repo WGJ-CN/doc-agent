@@ -2,16 +2,19 @@
 import { ref, computed, watch } from "vue"
 import { createTask, browseFolder, listTasks, getTask } from "../api.js"
 
+const props = defineProps({
+  allowedTypes: { type: Array, default: () => ["需求规格说明书", "软件设计文档", "测试用例"] },
+})
 const emit = defineEmits(["task-created"])
 
-const docType     = ref("需求规格说明书")
+const docType     = ref(props.allowedTypes[0] || "需求规格说明书")
 const material    = ref("")
 const projectPath = ref("")
 const customName  = ref("")
 const loading     = ref(false)
 const error       = ref("")
 const browsing    = ref(false)
-const docTypes    = ["需求规格说明书", "软件设计文档", "测试用例"]
+const availableTypes = computed(() => props.allowedTypes)
 
 const isDesignDoc = computed(() => docType.value === "软件设计文档")
 const isTestCase  = computed(() => docType.value === "测试用例")
@@ -24,6 +27,12 @@ const fetchingTasks  = ref(false)
 watch(docType, (val) => {
   if (val === "测试用例") {
     fetchCompletedTasks()
+  }
+})
+
+watch(() => props.allowedTypes, (types) => {
+  if (types && types.length > 0 && !types.includes(docType.value)) {
+    docType.value = types[0]
   }
 })
 
@@ -132,7 +141,7 @@ async function submit() {
           <label>文档类型</label>
           <div class="select-wrap">
             <select v-model="docType">
-              <option v-for="t in docTypes" :key="t" :value="t">{{ t }}</option>
+              <option v-for="t in availableTypes" :key="t" :value="t">{{ t }}</option>
             </select>
             <svg class="chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
