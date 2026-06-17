@@ -1,4 +1,4 @@
-﻿import axios from "axios";
+import axios from "axios";
 
 const api = axios.create({
   baseURL: "/api",
@@ -34,4 +34,26 @@ export function getDownloadUrl(taskId) {
 
 export function browseFolder() {
   return api.get("/tasks/browse-folder");
+}
+
+export function streamTaskProgress(taskId, onProgress, onDone) {
+  const url = `/api/tasks/${taskId}/stream`;
+  const source = new EventSource(url);
+
+  source.addEventListener("progress", (e) => {
+    const data = JSON.parse(e.data);
+    onProgress(data);
+  });
+
+  source.addEventListener("done", () => {
+    source.close();
+    if (onDone) onDone();
+  });
+
+  source.onerror = () => {
+    source.close();
+    if (onDone) onDone();
+  };
+
+  return () => source.close();
 }

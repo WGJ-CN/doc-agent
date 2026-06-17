@@ -1,4 +1,4 @@
-﻿"""
+"""
 任务管理 REST 端点
 """
 import uuid
@@ -7,16 +7,17 @@ import json
 import os
 import subprocess
 import logging
+import queue as std_queue
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy import select, func, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.models.task import Task
 from app.schemas.task import TaskCreate, TaskResponse, TaskListResponse
-from app.services.generator import DocumentGenerator
+from app.services.generator import DocumentGenerator, run_with_progress, _progress_queues, _queues_lock
 from app.config import settings
 
 logger = logging.getLogger(__name__)
@@ -40,14 +41,14 @@ async def browse_folder():
         raise HTTPException(status_code=500, detail=str(e))
 
 
-def _open_folder_dialog() -> str | None:
+def _open_folder_dialog():
     if os.name == "nt":
         return _open_folder_dialog_windows()
     else:
         return _open_folder_dialog_tk()
 
 
-def _open_folder_dialog_windows() -> str | None:
+def _open_folder_dialog_windows():
     ps_script = '''
 Add-Type -AssemblyName System.Windows.Forms
 $dialog = New-Object System.Windows.Forms.FolderBrowserDialog
@@ -70,7 +71,7 @@ if ($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
         return _open_folder_dialog_tk()
 
 
-def _open_folder_dialog_tk() -> str | None:
+def _open_folder_dialog_tk():
     try:
         import tkinter.filedialog
         import tkinter
@@ -149,6 +150,43 @@ async def get_task(
     return TaskResponse.from_orm_model(task)
 
 
+@router.get("/{task_id}/stream")
+async def stream_progress(task_id: str):
+    """SSE 端点：流式推送文档生成步骤进度"""
+    async def event_generator():
+        loop = asyncio.get_event_loop()
+
+        # 等待队列被创建（_execute_generation 中创建）
+        while True:
+            with _queues_lock:
+                q = _progress_queues.get(task_id)
+            if q is not None:
+                break
+            await asyncio.sleep(0.1)
+
+        while True:
+            try:
+                data = await loop.run_in_executor(None, q.get, True, 30)
+            except std_queue.Empty:
+                # 超时，发心跳保持连接
+                yield "event: heartbeat\ndata: {}\n\n"
+                continue
+
+            yield f"event: progress\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+
+            if data.get("step") == "done":
+                break
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
 @router.get("/{task_id}/download")
 async def download_task(
     task_id: str,
@@ -197,36 +235,47 @@ async def delete_task(
     return {"deleted": task_id}
 
 
-async def _execute_generation(task_id: str, project_path: str | None = None, full_doc_name: str | None = None):
-    """后台执行文档生成，更新数据库状态"""
+async def _execute_generation(task_id: str, project_path=None, full_doc_name=None):
+    """后台执行文档生成，更新数据库状态（通过 run_with_progress 自动推送步骤进度）"""
     from app.database import async_session_factory
 
-    async with async_session_factory() as db:
-        task = await db.get(Task, task_id)
-        if not task:
-            return
+    # 创建进度队列
+    q = std_queue.Queue()
+    with _queues_lock:
+        _progress_queues[task_id] = q
 
-        task.status = "running"
-        await db.commit()
+    try:
+        async with async_session_factory() as db:
+            task = await db.get(Task, task_id)
+            if not task:
+                return
 
-        try:
-            result_md, outline, error = await asyncio.to_thread(
-                DocumentGenerator.run,
-                task_id=task_id,
-                material=task.material,
-                doc_type=task.doc_type,
-                project_path=project_path,
-                full_doc_name=full_doc_name,
-            )
-        except Exception as e:
-            result_md, outline, error = None, None, str(e)
+            task.status = "running"
+            await db.commit()
 
-        if error:
-            task.status = "failed"
-            task.error = error
-        else:
-            task.status = "completed"
-            task.result_md = result_md
-            task.outline_json = json.dumps(outline, ensure_ascii=False) if outline else None
+            try:
+                result_md, outline, error = await asyncio.to_thread(
+                    run_with_progress,
+                    task_id=task_id,
+                    material=task.material,
+                    doc_type=task.doc_type,
+                    project_path=project_path,
+                    full_doc_name=full_doc_name,
+                )
+            except Exception as e:
+                result_md, outline, error = None, None, str(e)
 
-        await db.commit()
+            if error:
+                task.status = "failed"
+                task.error = error
+            else:
+                task.status = "completed"
+                task.result_md = result_md
+                task.outline_json = json.dumps(outline, ensure_ascii=False) if outline else None
+
+            await db.commit()
+    finally:
+        # 保留队列一段时间供 SSE 消费，然后清理
+        await asyncio.sleep(10)
+        with _queues_lock:
+            _progress_queues.pop(task_id, None)

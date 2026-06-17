@@ -1,10 +1,31 @@
-﻿<script setup>
+<script setup>
 import { computed } from "vue"
 import { marked } from "marked"
 import { getDownloadUrl } from "../api.js"
 
-const props = defineProps({ task: { type: Object, required: true } })
+const props = defineProps({
+  task: { type: Object, required: true },
+  progressSteps: { type: Array, default: () => [] },
+})
 const emit  = defineEmits(["back", "delete"])
+
+const STATUS_LABELS = {
+  searching:   { icon: "🔍", text: "智能体正在搜索文档规范" },
+  outline:     { icon: "📋", text: "智能体正在生成大纲" },
+  writing:     { icon: "✍️", text: "智能体正在生成正文" },
+  scoring:     { icon: "📊", text: "智能体正在评分" },
+  rewriting:   { icon: "🔄", text: "智能体正在优化重写" },
+  consistency: { icon: "🔗", text: "智能体正在检查代码一致性" },
+  done:        { icon: "✅", text: "文档生成完成" },
+}
+
+const currentStep = computed(() => {
+  const steps = props.progressSteps
+  if (!steps || steps.length === 0) return null
+  const last = steps[steps.length - 1]
+  if (!last || !last.step) return null
+  return STATUS_LABELS[last.step] || { icon: "⏳", text: "智能体正在处理…" }
+})
 
 const html  = computed(() => props.task.result_md ? marked(props.task.result_md) : "")
 const dlUrl = computed(() => getDownloadUrl(props.task.id))
@@ -12,7 +33,7 @@ const dlUrl = computed(() => getDownloadUrl(props.task.id))
 const cfg = computed(() => {
   const m = {
     pending:   { icon: "⏳", text: "任务已提交，正在排队…",    cls: "s-pend" },
-    running:   { icon: null, text: "AI 正在生成文档，预计 1-2 分钟…", cls: "s-run" },
+    running:   { icon: null, text: null,                        cls: "s-run" },
     completed: { icon: "✅", text: "文档生成完成",             cls: "s-ok" },
     failed:    { icon: "❌", text: null,                       cls: "s-fail" },
   }
@@ -25,7 +46,11 @@ const cfg = computed(() => {
     <div v-if="task.status !== 'completed'" :class="['banner', cfg.cls]">
       <span v-if="cfg.icon" class="banner-icon">{{ cfg.icon }}</span>
       <span v-else class="spin"></span>
-      <span class="banner-text">{{ cfg.text }}</span>
+      <div v-if="task.status === 'running' && currentStep" class="banner-step">
+        <span class="banner-step-icon">{{ currentStep.icon }}</span>
+        <span class="banner-step-text">{{ currentStep.text }}</span>
+      </div>
+      <span v-else-if="cfg.text" class="banner-text">{{ cfg.text }}</span>
       <span v-if="task.status === 'failed'" class="banner-err">：{{ task.error }}</span>
     </div>
 
@@ -78,6 +103,10 @@ const cfg = computed(() => {
 .banner { display: flex; align-items: center; gap: 12px; padding: 20px 28px; font-size: 14px }
 .banner-icon { font-size: 22px; flex-shrink: 0 }
 .banner-text { font-weight: 500 }
+.banner-step { display: flex; align-items: center; gap: 8px }
+.banner-step-icon { font-size: 18px; flex-shrink: 0 }
+.banner-step-text { font-weight: 500; animation: stepFadeIn 0.3s ease }
+@keyframes stepFadeIn { from { opacity: 0; transform: translateY(4px) } to { opacity: 1; transform: translateY(0) } }
 .s-pend { background: linear-gradient(135deg, #fffbeb, #fef3c7); color: #92400e; border-bottom: 1px solid #fde68a }
 .s-run  { background: linear-gradient(135deg, #eff6ff, #dbeafe); color: #1e40af; border-bottom: 1px solid #bfdbfe }
 .s-fail { background: linear-gradient(135deg, #fef2f2, #fee2e2); color: #991b1b; border-bottom: 1px solid #fecaca }
@@ -174,4 +203,3 @@ const cfg = computed(() => {
   .banner { padding: 16px 20px; font-size: 13px }
 }
 </style>
-
