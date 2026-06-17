@@ -154,20 +154,26 @@ async def download_task(
     task_id: str,
     db: AsyncSession = Depends(get_db),
 ):
-    """下载生成的 Markdown 文件"""
+    """下载生成的文件"""
     task = await db.get(Task, task_id)
     if not task:
         raise HTTPException(status_code=404, detail="任务不存在")
     if task.status != "completed":
         raise HTTPException(status_code=400, detail="任务尚未完成")
 
-    md_path = os.path.join(settings.output_dir, f"{task_id}.md")
-    if not os.path.exists(md_path):
-        raise HTTPException(status_code=404, detail="文件不存在")
-
-    display_name = task.custom_name or task.doc_type
-    filename = f"{display_name}_{task_id}.md"
-    return FileResponse(md_path, media_type="text/markdown", filename=filename)
+    if task.doc_type == "测试用例":
+        file_path = os.path.join(settings.output_dir, f"{task_id}.json")
+        if not os.path.exists(file_path):
+            raise HTTPException(status_code=404, detail="文件不存在")
+        filename = f"{task.doc_type}_{task_id}.json"
+        return FileResponse(file_path, media_type="application/json", filename=filename)
+    else:
+        file_path = os.path.join(settings.output_dir, f"{task_id}.md")
+        if not os.path.exists(file_path):
+            raise HTTPException(status_code=404, detail="文件不存在")
+        display_name = task.custom_name or task.doc_type
+        filename = f"{display_name}_{task_id}.md"
+        return FileResponse(file_path, media_type="text/markdown", filename=filename)
 
 
 @router.delete("/{task_id}", status_code=200)
