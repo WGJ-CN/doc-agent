@@ -27,12 +27,15 @@ class Settings:
 
     @property
     def database_url(self) -> str:
-        pwd = quote_plus(self.MYSQL_PASSWORD)
-        return (
-            f"mysql+aiomysql://{self.MYSQL_USER}:{pwd}"
-            f"@{self.MYSQL_HOST}:{self.MYSQL_PORT}/{self.MYSQL_DATABASE}"
-            "?charset=utf8mb4"
-        )
+        # 本地开发用 SQLite，生产/协作环境配 MYSQL_PASSWORD 后用 MySQL
+        pwd = os.getenv("MYSQL_PASSWORD", "")
+        if pwd and pwd != "your-mysql-password":
+            return (
+                f"mysql+aiomysql://{self.MYSQL_USER}:{quote_plus(pwd)}"
+                f"@{self.MYSQL_HOST}:{self.MYSQL_PORT}/{self.MYSQL_DATABASE}"
+                "?charset=utf8mb4"
+            )
+        return "sqlite+aiosqlite:///doc_agent.db"
 
     # 引擎路径
     @property

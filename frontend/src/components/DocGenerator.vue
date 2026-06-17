@@ -1,6 +1,6 @@
 ﻿<script setup>
-import { ref, computed } from "vue"
-import { createTask, browseFolder } from "../api.js"
+import { ref, computed, watch } from "vue"
+import { createTask, browseFolder, listTasks, getTask } from "../api.js"
 
 const emit = defineEmits(["task-created"])
 
@@ -11,9 +11,44 @@ const customName  = ref("")
 const loading     = ref(false)
 const error       = ref("")
 const browsing    = ref(false)
-const docTypes    = ["需求规格说明书", "软件设计文档"]
+const docTypes    = ["需求规格说明书", "软件设计文档", "测试用例"]
 
 const isDesignDoc = computed(() => docType.value === "软件设计文档")
+const isTestCase  = computed(() => docType.value === "测试用例")
+
+// 已完成任务列表（测试用例模式用）
+const completedTasks = ref([])
+const selectedTasks  = ref([])
+const fetchingTasks  = ref(false)
+
+watch(docType, (val) => {
+  if (val === "测试用例") {
+    fetchCompletedTasks()
+  }
+})
+
+async function fetchCompletedTasks() {
+  fetchingTasks.value = true
+  try {
+    const r = await listTasks(1, 50)
+    completedTasks.value = (r.data.items || []).filter(
+      t => t.status === "completed"
+    )
+  } catch (e) {
+    // ignore
+  } finally {
+    fetchingTasks.value = false
+  }
+}
+
+function toggleTask(taskId) {
+  const idx = selectedTasks.value.indexOf(taskId)
+  if (idx >= 0) {
+    selectedTasks.value.splice(idx, 1)
+  } else {
+    selectedTasks.value.push(taskId)
+  }
+}
 
 async function openFolderDialog() {
   browsing.value = true
@@ -32,7 +67,26 @@ async function openFolderDialog() {
 }
 
 async function submit() {
-  if (!isDesignDoc.value) {
+  if (isTestCase.value) {
+    // 从选中任务合并素材，或使用手动粘贴的素材
+    if (selectedTasks.value.length > 0) {
+      loading.value = true; error.value = ""
+      try {
+        let combined = ""
+        for (const tid of selectedTasks.value) {
+          const r = await getTask(tid)
+          combined += `===== ${r.data.doc_type} =====\n${r.data.result_md || ""}\n\n`
+        }
+        material.value = combined
+      } catch (e) {
+        error.value = "获取任务内容失败"
+        loading.value = false; return
+      }
+    }
+    if (!material.value.trim()) {
+      error.value = "请选择已生成的文档或手动粘贴素材"; loading.value = false; return
+    }
+  } else if (!isDesignDoc.value) {
     if (!material.value.trim()) { error.value = "请输入素材内容"; return }
   } else {
     if (!projectPath.value.trim() && !material.value.trim()) {
@@ -51,6 +105,7 @@ async function submit() {
     material.value = ""
     projectPath.value = ""
     customName.value = ""
+    selectedTasks.value = []
   } catch (e) {
     error.value = e.response?.data?.detail || e.message || "提交失败"
   } finally { loading.value = false }
@@ -65,8 +120,9 @@ async function submit() {
       </div>
       <div>
         <h1>新建文档生成任务</h1>
-        <p v-if="!isDesignDoc">粘贴项目素材，AI 自动生成需求规格说明书</p>
-        <p v-else>选择项目文件夹自动扫描代码，AI 生成软件设计文档</p>
+        <p v-if="isDesignDoc">选择项目文件夹自动扫描代码，AI 生成软件设计文档</p>
+        <p v-else-if="isTestCase">粘贴需求文档+设计文档，AI 自动生成白盒测试用例（覆盖全路径）</p>
+        <p v-else>粘贴项目素材，AI 自动生成需求规格说明书</p>
       </div>
     </div>
 
@@ -109,7 +165,7 @@ async function submit() {
           </div>
         </div>
 
-        <div class="field field--grow">
+        <div v-if="!isTestCase" class="field field--grow">
           <label class="label-row">
             <span>{{ isDesignDoc ? "补充说明（可选）" : "素材内容" }}</span>
             <span v-if="!isDesignDoc" class="hint">{{ material.length }} 字</span>
@@ -119,6 +175,31 @@ async function submit() {
             :placeholder="isDesignDoc
               ? '项目的补充说明、特殊设计要求…'
               : '在此粘贴项目素材文本…'"
+          ></textarea>
+        </div>
+        <div v-else class="field field--grow">
+          <label>从已生成文档中选择（可选）</label>
+          <div v-if="completedTasks.length === 0 && !fetchingTasks" class="hint-text">
+            暂无已完成的文档，请先生成需求文档或设计文档，或直接粘贴素材
+          </div>
+          <div v-if="fetchingTasks" class="hint-text">加载中…</div>
+          <div v-if="completedTasks.length > 0" class="task-pick-list">
+            <label v-for="t in completedTasks" :key="t.id" class="task-pick-item"
+                   :class="{ checked: selectedTasks.includes(t.id) }">
+              <input type="checkbox" :checked="selectedTasks.includes(t.id)"
+                     @change="toggleTask(t.id)" />
+              <span class="task-pick-type">{{ t.doc_type }}</span>
+              <span class="task-pick-name">{{ t.custom_name || t.id }}</span>
+            </label>
+          </div>
+          <label class="label-row" style="margin-top:12px">
+            <span>或手动粘贴素材</span>
+            <span class="hint">{{ material.length }} 字</span>
+          </label>
+          <textarea
+            v-model="material"
+            placeholder="粘贴需求文档和设计文档内容…"
+            style="min-height:120px"
           ></textarea>
         </div>
 
@@ -138,30 +219,42 @@ async function submit() {
 
       <div class="col-tips">
         <div class="tip-card">
-          <h3 v-if="!isDesignDoc">写作提示</h3>
-          <h3 v-else>设计文档提示</h3>
-          <ul v-if="!isDesignDoc">
-            <li>粘贴项目的背景介绍、核心需求、功能列表</li>
-            <li>包含技术栈、约束条件可提升生成质量</li>
-            <li>素材越详细，生成的文档越完整</li>
-          </ul>
-          <ul v-else>
+          <h3 v-if="isDesignDoc">设计文档提示</h3>
+          <h3 v-else-if="isTestCase">测试用例提示</h3>
+          <h3 v-else>写作提示</h3>
+          <ul v-if="isDesignDoc">
             <li>点击"浏览"选择项目文件夹，自动扫描源代码</li>
             <li>支持 Python/Java/Go/Vue/React 等常见项目</li>
             <li>补充说明可添加特殊设计约束或要求</li>
           </ul>
+          <ul v-else-if="isTestCase">
+            <li>先在左侧生成需求文档和设计文档</li>
+            <li>将两份文档内容粘贴到素材输入框</li>
+            <li>AI 根据文档生成覆盖全路径的白盒测试用例</li>
+          </ul>
+          <ul v-else>
+            <li>粘贴项目的背景介绍、核心需求、功能列表</li>
+            <li>包含技术栈、约束条件可提升生成质量</li>
+            <li>素材越详细，生成的文档越完整</li>
+          </ul>
         </div>
         <div class="tip-card">
           <h3>输出说明</h3>
-          <ul v-if="!isDesignDoc">
-            <li>生成标准需求规格说明书（SRS）</li>
-            <li>支持 Markdown 格式，可下载 .md 文件</li>
-            <li>生成时间约 1-2 分钟</li>
-          </ul>
-          <ul v-else>
+          <ul v-if="isDesignDoc">
             <li>生成标准软件设计文档（架构、接口、数据设计）</li>
             <li>包含 Mermaid 架构图、流程图、ER 图</li>
             <li>含代码扫描，生成时间约 2-3 分钟</li>
+          </ul>
+          <ul v-else-if="isTestCase">
+            <li>生成 DRG 入组测试用例文档</li>
+            <li>含自然语言病历 + 编码映射 + 预期分组路径</li>
+            <li>包含 Mermaid 分组路径覆盖图</li>
+            <li>生成时间约 1-2 分钟</li>
+          </ul>
+          <ul v-else>
+            <li>生成标准需求规格说明书（SRS）</li>
+            <li>支持 Markdown 格式，可下载 .md 文件</li>
+            <li>生成时间约 1-2 分钟</li>
           </ul>
         </div>
       </div>
@@ -264,6 +357,16 @@ textarea::placeholder { color: #cbd5e1 }
 }
 @keyframes rotate { to { transform: rotate(360deg) } }
 
+.builtin-note {
+  display: flex; gap: 12px; padding: 16px;
+  background: #eef2ff; border: 1px solid #c7d2fe;
+  border-radius: 10px; align-items: flex-start;
+  flex: 1; min-height: 100px;
+}
+.builtin-note svg { flex-shrink: 0; margin-top: 2px }
+.builtin-note strong { font-size: 14px; color: #4338ca }
+.builtin-note p { font-size: 13px; color: #6366f1; margin-top: 4px; line-height: 1.6 }
+
 .err {
   margin-top: 16px; padding: 14px 16px;
   background: #fef2f2; color: #dc2626; border-radius: 10px;
@@ -272,6 +375,30 @@ textarea::placeholder { color: #cbd5e1 }
 }
 .fade-enter-active, .fade-leave-active { transition: opacity .2s }
 .fade-enter-from, .fade-leave-to { opacity: 0 }
+
+.hint-text {
+  font-size: 13px; color: var(--text-muted, #94a3b8); padding: 8px 0;
+}
+.task-pick-list {
+  max-height: 160px; overflow-y: auto;
+  border: 1px solid var(--border, #e2e8f0); border-radius: 8px;
+}
+.task-pick-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; cursor: pointer; font-size: 13px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.task-pick-item:last-child { border-bottom: none }
+.task-pick-item.checked { background: #eef2ff }
+.task-pick-item input { margin: 0 }
+.task-pick-type {
+  flex-shrink: 0; padding: 2px 6px;
+  background: #e2e8f0; border-radius: 4px; font-size: 11px; color: #475569;
+}
+.task-pick-name {
+  flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  color: var(--text, #0f172a);
+}
 
 .tip-card {
   background: #f8fafc; border: 1px solid var(--border, #e2e8f0);

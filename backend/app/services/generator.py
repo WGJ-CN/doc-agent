@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 sys.path.insert(0, settings.engine_dir)
 from document_generate import generate_srs_for_topic      # noqa: E402
 from document_design_generate import generate_design_for_topic  # noqa: E402
+from testcase_generate import generate_testcase_for_topic  # noqa: E402
 from project_scanner import scan_project                  # noqa: E402
 
 
@@ -37,6 +38,8 @@ class DocumentGenerator:
 
         if doc_type == "软件设计文档":
             return DocumentGenerator._run_design(task_id, material, effective_name, project_path)
+        elif doc_type == "测试用例":
+            return DocumentGenerator._run_testcase(task_id, material, effective_name)
         else:
             return DocumentGenerator._run_srs(task_id, material, effective_name)
 
@@ -147,6 +150,46 @@ class DocumentGenerator:
 
         except Exception as e:
             logger.exception("设计文档生成失败 [%s]: %s", task_id, e)
+            return None, None, str(e)
+
+        finally:
+            if os.path.exists(material_path):
+                os.remove(material_path)
+
+    @staticmethod
+    def _run_testcase(task_id: str, material: str, doc_type: str):
+        """DRG 测试用例生成：两阶段 LLM 生成 + ruzu.py 验算，输出可读 Markdown"""
+        material_path = os.path.join(settings.output_dir, f"{task_id}_material.txt")
+        output_md = os.path.join(settings.output_dir, f"{task_id}.md")
+        outline_path = output_md.replace(".md", "_outline.json")
+
+        try:
+            with open(material_path, "w", encoding="utf-8") as f:
+                f.write(material or "")
+
+            logger.info("开始生成测试用例 [%s] type=%s", task_id, doc_type)
+            generate_testcase_for_topic(
+                material_file=material_path,
+                output_md=output_md,
+                doc_type=doc_type,
+            )
+
+            if not os.path.exists(output_md):
+                raise RuntimeError("引擎未生成输出文件")
+
+            with open(output_md, "r", encoding="utf-8") as f:
+                result_md = f.read()
+
+            outline = None
+            if os.path.exists(outline_path):
+                with open(outline_path, "r", encoding="utf-8") as f:
+                    outline = json.load(f)
+
+            logger.info("测试用例生成完成 [%s]", task_id)
+            return result_md, outline, None
+
+        except Exception as e:
+            logger.exception("测试用例生成失败 [%s]: %s", task_id, e)
             return None, None, str(e)
 
         finally:

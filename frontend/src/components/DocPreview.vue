@@ -29,6 +29,22 @@ const cfg = computed(() => {
       <span v-if="task.status === 'failed'" class="banner-err">：{{ task.error }}</span>
     </div>
 
+    <!-- 失败任务的操作栏 -->
+    <div v-if="task.status === 'failed'" class="bar">
+      <div class="bar-info">
+        <span class="bar-icon">❌</span>
+        <h2>{{ task.doc_type }}</h2>
+      </div>
+      <div class="bar-acts">
+        <button class="act act--ghost" @click="emit('back')">
+          返回列表
+        </button>
+        <button class="act act--del" @click="emit('delete', task.id)">
+          删除
+        </button>
+      </div>
+    </div>
+
     <template v-if="task.status === 'completed'">
       <div class="bar">
         <div class="bar-info">
