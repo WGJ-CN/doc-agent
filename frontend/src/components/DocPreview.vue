@@ -1,6 +1,7 @@
 <script setup>
-import { ref, computed } from "vue"
+import { ref, computed, watch, nextTick, onMounted } from "vue"
 import { marked } from "marked"
+import mermaid from "mermaid"
 import { getDownloadUrl } from "../api.js"
 
 const props = defineProps({
@@ -65,6 +66,97 @@ const timeline = computed(() => {
 
 const doneCount = computed(() => timeline.value.filter(t => t.status === "done").length)
 const totalCount = computed(() => timeline.value.length)
+
+mermaid.initialize({
+  startOnLoad: true,
+  theme: "default",
+  flowchart: { useMaxWidth: true, htmlLabels: true },
+  sequence: { useMaxWidth: true },
+})
+
+async function renderMermaid() {
+  await nextTick()
+  await new Promise(r => setTimeout(r, 100))
+  const container = document.querySelector(".md")
+  if (!container) return
+  const blocks = container.querySelectorAll("pre code.language-mermaid")
+  if (blocks.length === 0) {
+    const all = container.querySelectorAll("pre code")
+    for (const b of all) {
+      const cls = b.className || b.getAttribute("class") || ""
+      if (cls.includes("mermaid")) {
+        try {
+          const code = b.textContent || ""
+          const id = "m" + Math.random().toString(36).slice(2, 8)
+          const { svg } = await mermaid.render(id, code)
+          b.parentElement.replaceWith(buildMermaidBlock(svg, code))
+        } catch (_) {}
+      }
+    }
+    return
+  }
+  for (const b of blocks) {
+    const pre = b.parentElement
+    try {
+      const code = b.textContent || ""
+      const id = "m" + Math.random().toString(36).slice(2, 8)
+      const { svg } = await mermaid.render(id, code)
+      pre.replaceWith(buildMermaidBlock(svg, code))
+    } catch (_) {}
+  }
+}
+
+function buildMermaidBlock(svg, code) {
+  const wrap = document.createElement("div")
+  wrap.className = "mermaid-wrap"
+
+  const toggle = document.createElement("div")
+  toggle.className = "mermaid-toggle"
+
+  const label1 = document.createElement("span")
+  label1.className = "mermaid-toggle-label"
+  label1.textContent = "图"
+
+  const label2 = document.createElement("label")
+  label2.className = "mermaid-switch"
+
+  const checkbox = document.createElement("input")
+  checkbox.type = "checkbox"
+  checkbox.onchange = function () { wrap.classList.toggle("show-code") }
+
+  const slider = document.createElement("span")
+  slider.className = "mermaid-slider"
+
+  const label3 = document.createElement("span")
+  label3.className = "mermaid-toggle-label"
+  label3.textContent = "码"
+
+  label2.appendChild(checkbox)
+  label2.appendChild(slider)
+  toggle.appendChild(label1)
+  toggle.appendChild(label2)
+  toggle.appendChild(label3)
+
+  const imgDiv = document.createElement("div")
+  imgDiv.className = "mermaid-img"
+  imgDiv.innerHTML = svg
+
+  const pre = document.createElement("pre")
+  pre.className = "mermaid-src"
+  const codeEl = document.createElement("code")
+  codeEl.textContent = code
+  pre.appendChild(codeEl)
+
+  wrap.appendChild(toggle)
+  wrap.appendChild(imgDiv)
+  wrap.appendChild(pre)
+  return wrap
+}
+
+
+watch(() => props.task.result_md, () => { if (props.task.status === "completed") renderMermaid() })
+watch(() => props.task.status, (s) => { if (s === "completed") renderMermaid() })
+onMounted(() => { if (props.task.status === "completed") renderMermaid() })
 
 const html  = computed(() => props.task.result_md ? marked(props.task.result_md) : "")
 const dlUrl = computed(() => getDownloadUrl(props.task.id))
@@ -396,6 +488,45 @@ const dlUrl = computed(() => getDownloadUrl(props.task.id))
 .md :deep(blockquote) { border-left: 4px solid #4f46e5; padding: 12px 20px; margin: 16px 0; color: #64748b; background: #f8fafc; border-radius: 0 10px 10px 0; font-style: italic }
 .md :deep(hr) { border: none; border-top: 1px solid #e2e8f0; margin: 28px 0 }
 .md :deep(img) { max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,.06) }
+.md :deep(.mermaid-wrap) {
+  position: relative;
+  margin: 16px 0;
+  background: #f8fafc; border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+.md :deep(.mermaid-wrap .mermaid-img) {
+  display: flex; justify-content: center;
+  padding: 28px 16px 20px;
+  overflow-x: auto;
+}
+.md :deep(.mermaid-wrap .mermaid-img svg) { max-width: 100%; height: auto }
+.md :deep(.mermaid-wrap .mermaid-src) { display: none; margin: 0; padding: 0; border-radius: 0; background: #1e293b }
+.md :deep(.mermaid-wrap .mermaid-src code) { display: block; padding: 20px; color: #e2e8f0; font-size: 13px; line-height: 1.7; white-space: pre; overflow-x: auto }
+.md :deep(.mermaid-wrap.show-code .mermaid-img) { display: none }
+.md :deep(.mermaid-wrap.show-code .mermaid-src) { display: block }
+.md :deep(.mermaid-toggle) {
+  position: absolute; top: 8px; right: 12px;
+  display: flex; align-items: center; gap: 4px;
+  z-index: 1;
+}
+.md :deep(.mermaid-toggle-label) {
+  font-size: 11px; color: #94a3b8; user-select: none;
+}
+.md :deep(.mermaid-switch) {
+  position: relative; display: inline-block; width: 36px; height: 20px;
+}
+.md :deep(.mermaid-switch input) { opacity: 0; width: 0; height: 0 }
+.md :deep(.mermaid-slider) {
+  position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+  background: #cbd5e1; border-radius: 10px; transition: .2s;
+}
+.md :deep(.mermaid-slider::before) {
+  content: ""; position: absolute; height: 14px; width: 14px;
+  left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: .2s;
+}
+.md :deep(.mermaid-switch input:checked + .mermaid-slider) { background: #4f46e5 }
+.md :deep(.mermaid-switch input:checked + .mermaid-slider::before) { transform: translateX(16px) }
 .md :deep(strong) { color: #0f172a; font-weight: 700 }
 
 @media (max-width: 640px) {
