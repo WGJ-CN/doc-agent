@@ -9,7 +9,6 @@ const view     = ref("home")
 const activeId = ref(null)
 const active   = ref(null)
 const progressSteps = ref([])
-let timer = null
 let closeSSE = null
 
 const STATUS = {
@@ -19,8 +18,8 @@ const STATUS = {
   failed:    { label: "失败", dot: "#ef4444" },
 }
 
-const count      = computed(() => tasks.value.length)
-const isDesktop  = computed(() => view.value === "home" || view.value === "detail")
+const count     = computed(() => tasks.value.length)
+const isDesktop = computed(() => view.value === "home" || view.value === "detail")
 
 async function fetchTasks() {
   try {
@@ -28,35 +27,14 @@ async function fetchTasks() {
     tasks.value = (r.data.items || []).filter(t => t.doc_type !== "测试用例")
   } catch (_) {}
 }
-async function selectTask(id) {
-  activeId.value = id; view.value = "detail"; await refresh()
-}
-async function refresh() {
-  if (!activeId.value) return
-  try {
-    const r = await getTask(activeId.value); active.value = r.data
-    if (r.data.status === "running" || r.data.status === "pending") startPoll()
-    else { stopPoll(); fetchTasks() }
-  } catch (_) {}
-}
-function startPoll() { stopPoll(); timer = setInterval(refresh, 3000) }
-function stopPoll()  { if (timer) { clearInterval(timer); timer = null } }
 
 function stopSSE() {
   if (closeSSE) { closeSSE(); closeSSE = null }
-  progressSteps.value = []
 }
 
-function goHome()   { view.value = "home";   activeId.value = null; active.value = null; stopPoll(); stopSSE() }
-function goCreate() { view.value = "create"; activeId.value = null; active.value = null; stopPoll(); stopSSE() }
-
-function onCreated(taskId) {
-  activeId.value = taskId
-  active.value   = { id: taskId, status: "pending", doc_type: "需求规格说明书" }
-  view.value     = "detail"
-  progressSteps.value = [{ step: "pending", tool: "" }]
-  stopPoll()
+function connectSSE(taskId) {
   stopSSE()
+  progressSteps.value = []
   closeSSE = streamTaskProgress(
     taskId,
     (data) => {
@@ -67,16 +45,57 @@ function onCreated(taskId) {
     },
     () => {
       refresh()
+      fetchTasks()
     }
   )
+}
+
+async function selectTask(id) {
+  activeId.value = id
+  view.value = "detail"
+  await refresh()
+  if (active.value && (active.value.status === "running" || active.value.status === "pending")) {
+    connectSSE(id)
+  }
+}
+
+async function refresh() {
+  if (!activeId.value) return
+  try {
+    const r = await getTask(activeId.value)
+    active.value = r.data
+  } catch (_) {}
+}
+
+function goHome() {
+  view.value = "home"
+  activeId.value = null
+  active.value = null
+  stopSSE()
+}
+
+function goCreate() {
+  view.value = "create"
+  activeId.value = null
+  active.value = null
+  stopSSE()
+}
+
+function onCreated(taskId) {
+  activeId.value = taskId
+  active.value   = { id: taskId, status: "pending", doc_type: "需求规格说明书" }
+  view.value     = "detail"
+  progressSteps.value = [{ step: "pending", tool: "" }]
+  connectSSE(taskId)
   fetchTasks()
 }
+
 async function onDelete(taskId) {
   try { await deleteTask(taskId); goHome(); fetchTasks() } catch (_) {}
 }
 
 onMounted(fetchTasks)
-onUnmounted(() => { stopPoll(); stopSSE() })
+onUnmounted(stopSSE)
 
 function fmt(t) {
   if (!t) return ""
@@ -205,9 +224,6 @@ function fmt(t) {
 </template>
 
 <style scoped>
-/* ================================================================
-   桌面双栏
-   ================================================================ */
 .d-shell { display:flex; height:100%; min-width:960px }
 .d-side {
   width:340px; min-width:340px; background:var(--surface);

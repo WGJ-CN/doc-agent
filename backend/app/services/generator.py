@@ -1,6 +1,5 @@
 import asyncio
 import os
-import queue
 import re
 import sys
 import threading
@@ -11,19 +10,19 @@ from app.config import settings
 logger = logging.getLogger(__name__)
 
 # ---------- 进度推送基础设施 ----------
-_progress_queues: dict[str, queue.Queue] = {}
-_queues_lock = threading.Lock()
+_progress_buffers: dict[str, list] = {}
+_buffers_lock = threading.Lock()
 
 
-def _push_progress(task_id: str, step: str, tool: str):
-    """线程安全地把进度事件推入队列（由引擎线程调用）"""
-    with _queues_lock:
-        q = _progress_queues.get(task_id)
-    if q is not None:
-        try:
-            q.put_nowait({"step": step, "tool": tool})
-        except queue.Full:
-            pass
+def _push_progress(task_id, step, tool, status="running", detail=None):
+    """线程安全地把进度事件追加到回放缓冲区"""
+    with _buffers_lock:
+        buf = _progress_buffers.get(task_id)
+    if buf is not None:
+        event = {"step": step, "tool": tool, "status": status}
+        if detail:
+            event["detail"] = detail
+        buf.append(event)
 
 
 _TOOL_PATTERN = re.compile(r'\[调用工具\]\s*(\w+)')
@@ -38,17 +37,74 @@ _STEP_MAP = {
     "finish":                    "done",
 }
 
+_SEARCH_RESULT = re.compile(r'\[搜索规范\]\s*找到\s*(\d+)\s*条结果.*解析\s*(\d+)\s*个页面')
+_SCORE_RESULT = re.compile(r'\[评分\]\s*(\d+)/10')
+_SCORE_DIMS = re.compile(r'完整性:(.+?)\s+准确性:(.+?)\s+结构性:(.+?)\s+可读性:(.+?)\s+格式:(.+)')
+_REWRITE_RESULT = re.compile(r'第\s*(\d+)\s*次重写')
+_CONSISTENCY_RESULT = re.compile(r'\[一致性\]\s*与代码一致:\s*(True|False)')
+_FINAL_SCORE = re.compile(r'最终评分：(\d+)/10.*重写次数：(\d+)')
+_FINAL_SCORE_DESIGN = re.compile(r'最终评分：(\d+)/10.*代码一致：(True|False).*重写次数：(\d+)')
 
-def _make_progress_writer(task_id: str, original_write):
-    """生成一个替换 sys.stdout.write 的拦截函数"""
-    def write(s: str):
+
+def _make_progress_writer(task_id, original_write):
+    """返回 (write_fn, flush_fn)"""
+    state = {"current_step": None}
+
+    def _flush():
+        if state["current_step"]:
+            _push_progress(task_id, state["current_step"], state["current_step"], status="done")
+            state["current_step"] = None
+
+    def _try_detail(s, cur):
+        m = _SEARCH_RESULT.search(s)
+        if m:
+            return f"找到 {m.group(1)} 条标准，解析 {m.group(2)} 个页面"
+        m = _SCORE_RESULT.search(s)
+        if m:
+            return f"评分 {m.group(1)}/10"
+        m = _SCORE_DIMS.search(s)
+        if m:
+            return f"完整:{m.group(1)} 准确:{m.group(2)} 结构:{m.group(3)} 可读:{m.group(4)} 格式:{m.group(5)}"
+        m = _REWRITE_RESULT.search(s)
+        if m:
+            return f"第 {m.group(1)} 次重写"
+        m = _CONSISTENCY_RESULT.search(s)
+        if m:
+            return f"代码一致: {m.group(1)}"
+        return None
+
+    def write(s):
         original_write(s)
+
         m = _TOOL_PATTERN.search(s)
         if m:
             tool_name = m.group(1)
             step = _STEP_MAP.get(tool_name, tool_name)
-            _push_progress(task_id, step, tool_name)
-    return write
+            if tool_name == "finish":
+                _flush()
+                return
+            if state["current_step"] and state["current_step"] != step:
+                _flush()
+            state["current_step"] = step
+            _push_progress(task_id, step, tool_name, status="running")
+            return
+
+        if not state["current_step"]:
+            fm = _FINAL_SCORE_DESIGN.search(s) or _FINAL_SCORE.search(s)
+            if fm:
+                groups = fm.groups()
+                if len(groups) == 3:
+                    detail = f"最终评分 {groups[0]}/10 | 代码一致 {groups[1]} | 重写 {groups[2]} 次"
+                else:
+                    detail = f"最终评分 {groups[0]}/10 | 重写 {groups[1]} 次"
+                _push_progress(task_id, "done", "done", status="running", detail=detail)
+            return
+
+        detail = _try_detail(s, state["current_step"])
+        if detail:
+            _push_progress(task_id, state["current_step"], state["current_step"], status="running", detail=detail)
+
+    return write, _flush
 
 
 # ---------- 引擎导入 ----------
@@ -60,9 +116,9 @@ from project_scanner import scan_project
 
 
 def run_with_progress(task_id, material, doc_type, project_path=None, full_doc_name=None):
-    """在线程中执行生成，自动拦截 stdout 推送步骤事件"""
     original_write = sys.stdout.write
-    sys.stdout.write = _make_progress_writer(task_id, original_write)
+    write_fn, flush_fn = _make_progress_writer(task_id, original_write)
+    sys.stdout.write = write_fn
     try:
         return DocumentGenerator.run(
             task_id=task_id,
@@ -73,7 +129,8 @@ def run_with_progress(task_id, material, doc_type, project_path=None, full_doc_n
         )
     finally:
         sys.stdout.write = original_write
-        _push_progress(task_id, "done", "done")
+        flush_fn()
+        _push_progress(task_id, "done", "done", status="done")
 
 
 class DocumentGenerator:

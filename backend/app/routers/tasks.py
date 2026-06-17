@@ -7,7 +7,6 @@ import json
 import os
 import subprocess
 import logging
-import queue as std_queue
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import FileResponse, StreamingResponse
@@ -17,7 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.models.task import Task
 from app.schemas.task import TaskCreate, TaskResponse, TaskListResponse
-from app.services.generator import DocumentGenerator, run_with_progress, _progress_queues, _queues_lock
+from app.services.generator import DocumentGenerator, run_with_progress, _progress_buffers, _buffers_lock
 from app.config import settings
 
 logger = logging.getLogger(__name__)
@@ -152,30 +151,33 @@ async def get_task(
 
 @router.get("/{task_id}/stream")
 async def stream_progress(task_id: str):
-    """SSE 端点：流式推送文档生成步骤进度"""
+    """SSE 端点：先回放已有事件，再实时推送新事件（支持刷新后重连）"""
     async def event_generator():
-        loop = asyncio.get_event_loop()
-
-        # 等待队列被创建（_execute_generation 中创建）
+        # 等待缓冲区创建
         while True:
-            with _queues_lock:
-                q = _progress_queues.get(task_id)
-            if q is not None:
+            with _buffers_lock:
+                buf = _progress_buffers.get(task_id)
+            if buf is not None:
                 break
             await asyncio.sleep(0.1)
 
+        last_index = 0
+
         while True:
-            try:
-                data = await loop.run_in_executor(None, q.get, True, 30)
-            except std_queue.Empty:
-                # 超时，发心跳保持连接
-                yield "event: heartbeat\ndata: {}\n\n"
-                continue
+            # 回放未发送的事件（首次连接全部回放，重连补发新事件）
+            with _buffers_lock:
+                buf = _progress_buffers.get(task_id)
+                if buf is None:
+                    break
+                while last_index < len(buf):
+                    data = buf[last_index]
+                    last_index += 1
+                    yield f"event: progress\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+                    if data.get("step") == "done" and data.get("status") == "done":
+                        return
 
-            yield f"event: progress\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
-
-            if data.get("step") == "done":
-                break
+            # 等待新事件
+            await asyncio.sleep(0.3)
 
     return StreamingResponse(
         event_generator(),
@@ -239,10 +241,10 @@ async def _execute_generation(task_id: str, project_path=None, full_doc_name=Non
     """后台执行文档生成，更新数据库状态（通过 run_with_progress 自动推送步骤进度）"""
     from app.database import async_session_factory
 
-    # 创建进度队列
-    q = std_queue.Queue()
-    with _queues_lock:
-        _progress_queues[task_id] = q
+    # 创建回放缓冲区
+    buf = []
+    with _buffers_lock:
+        _progress_buffers[task_id] = buf
 
     try:
         async with async_session_factory() as db:
@@ -275,7 +277,7 @@ async def _execute_generation(task_id: str, project_path=None, full_doc_name=Non
 
             await db.commit()
     finally:
-        # 保留队列一段时间供 SSE 消费，然后清理
+        # 保留缓冲区供 SSE 消费，延迟清理
         await asyncio.sleep(10)
-        with _queues_lock:
-            _progress_queues.pop(task_id, None)
+        with _buffers_lock:
+            _progress_buffers.pop(task_id, None)
