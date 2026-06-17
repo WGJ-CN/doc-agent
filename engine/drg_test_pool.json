@@ -1,0 +1,2760 @@
+[
+  {
+    "id": "AA1",
+    "purpose": "测试先期分组-MDCA-AA1：心肺移植",
+    "path": "先期分组/MDC匹配 → 先期分组-MDCA → AA1 → AA19",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "J96.900",
+        "name": "J96.900"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "33.6x00",
+        "name": "心脏-肺联合移植术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCA",
+      "adrg": "AA1",
+      "adrg_name": "心肺移植",
+      "drg": "AA19",
+      "drg_name": "心肺移植",
+      "complication": "NONE"
+    },
+    "natural_language": "男，50岁，因J96.900入院，行心脏-肺联合移植术。"
+  },
+  {
+    "id": "AB1",
+    "purpose": "测试先期分组-MDCA-AB1：肝移植",
+    "path": "先期分组/MDC匹配 → 先期分组-MDCA → AB1 → AB19",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "K72.900",
+        "name": "K72.900"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "50.5902",
+        "name": "劈离式肝移植术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCA",
+      "adrg": "AB1",
+      "adrg_name": "肝移植",
+      "drg": "AB19",
+      "drg_name": "肝移植",
+      "complication": "NONE"
+    },
+    "natural_language": "男，50岁，因K72.900入院，行劈离式肝移植术。"
+  },
+  {
+    "id": "AH2",
+    "purpose": "测试先期分组-MDCA-AH2：有创呼吸机支持≥96 小时",
+    "path": "先期分组/MDC匹配 → 先期分组-MDCA → AH2 → AH29",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "J12.800",
+        "name": "病毒性肺炎，其他的"
+      },
+      "other_diagnoses": [
+        {
+          "code": "Z93.000",
+          "name": "气管造口状态"
+        }
+      ],
+      "main_procedure": {
+        "code": "96.7201",
+        "name": "呼吸机治疗[大于等于96小时]"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCA",
+      "adrg": "AH2",
+      "adrg_name": "有创呼吸机支持≥96 小时",
+      "drg": "AH29",
+      "drg_name": "有创呼吸机支持≥96小时",
+      "complication": "NONE"
+    },
+    "natural_language": "男，50岁，因病毒性肺炎，其他的入院，合并气管造口状态，行呼吸机治疗[大于等于96小时]。"
+  },
+  {
+    "id": "PS4",
+    "purpose": "测试先期分组-MDCP-PS4：早产儿（出生体重>2499g）",
+    "path": "先期分组/MDC匹配 → 先期分组-MDCP → PS4 → None",
+    "input": {
+      "gender": "男",
+      "age_days": 3,
+      "main_diagnosis": {
+        "code": "P07.000",
+        "name": "极低出生体重（小于999克）"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "",
+        "name": ""
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCP",
+      "adrg": null,
+      "adrg_name": null,
+      "drg": null,
+      "drg_name": null,
+      "complication": "NONE"
+    },
+    "natural_language": "男，3天岁，因极低出生体重（小于999克）入院。"
+  },
+  {
+    "id": "PK1",
+    "purpose": "测试先期分组-MDCP-PK1：新生儿伴呼吸机支持",
+    "path": "先期分组/MDC匹配 → 先期分组-MDCP → PK1 → PK15",
+    "input": {
+      "gender": "男",
+      "age_days": 3,
+      "main_diagnosis": {
+        "code": "P22.000",
+        "name": "新生儿呼吸窘迫综合征"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "93.9000",
+        "name": "无创机械性通气"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCP",
+      "adrg": "PK1",
+      "adrg_name": "新生儿伴呼吸机支持",
+      "drg": "PK15",
+      "drg_name": "新生儿伴呼吸机支持，不伴严重合并症或并发症",
+      "complication": "NONE"
+    },
+    "natural_language": "男，3天岁，因新生儿呼吸窘迫综合征入院，行无创机械性通气。"
+  },
+  {
+    "id": "PD1",
+    "purpose": "测试先期分组-MDCP-PD1：新生儿（出生年龄＜29 天）腹部手术",
+    "path": "先期分组/MDC匹配 → 先期分组-MDCP → PD1 → PD15",
+    "input": {
+      "gender": "男",
+      "age_days": 3,
+      "main_diagnosis": {
+        "code": "P07.000",
+        "name": "极低出生体重（小于999克）"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "38.6700x005",
+        "name": "腹腔静脉瘤切除术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCP",
+      "adrg": "PD1",
+      "adrg_name": "新生儿（出生年龄＜29 天）腹部手术",
+      "drg": "PD15",
+      "drg_name": "新生儿（出生年龄＜29天）腹部手术，不伴合并症或并发症",
+      "complication": "NONE"
+    },
+    "natural_language": "男，3天岁，因极低出生体重（小于999克）入院，行腹腔静脉瘤切除术。"
+  },
+  {
+    "id": "BB5",
+    "purpose": "测试常规MDC-MDCB-BB5：其他颅脑相关手术",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCB → BB5 → BB55",
+    "input": {
+      "gender": "男",
+      "age_days": 14600,
+      "main_diagnosis": {
+        "code": "G93.600x006",
+        "name": "缺血性脑水肿"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "01.5931",
+        "name": "内镜下颅底病损切除术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCB",
+      "adrg": "BB5",
+      "adrg_name": "其他颅脑相关手术",
+      "drg": "BB55",
+      "drg_name": "其他颅脑相关手术，不伴严重合并症或并发症",
+      "complication": "NONE"
+    },
+    "natural_language": "男，40岁，因缺血性脑水肿入院，行内镜下颅底病损切除术。"
+  },
+  {
+    "id": "CD2",
+    "purpose": "测试常规MDC-MDCC-CD2：眼肌手术",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCC → CD2 → CD29",
+    "input": {
+      "gender": "男",
+      "age_days": 14600,
+      "main_diagnosis": {
+        "code": "H11.100x001",
+        "name": "结膜变性"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "15.9x00x008",
+        "name": "眼睑轮匝肌切断术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCC",
+      "adrg": "CD2",
+      "adrg_name": "眼肌手术",
+      "drg": "CD29",
+      "drg_name": "眼肌手术",
+      "complication": "NONE"
+    },
+    "natural_language": "男，40岁，因结膜变性入院，行眼睑轮匝肌切断术。"
+  },
+  {
+    "id": "DE1",
+    "purpose": "测试常规MDC-MDCD-DE1：中耳/内耳/侧颅底手术",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCD → DE1 → DE19",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "S10.001",
+        "name": "喉挫伤"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "20.9303",
+        "name": "半规管瘘修补术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCD",
+      "adrg": "DE1",
+      "adrg_name": "中耳/内耳/侧颅底手术",
+      "drg": "DE19",
+      "drg_name": "中耳/内耳/侧颅底手术",
+      "complication": "NONE"
+    },
+    "natural_language": "男，50岁，因喉挫伤入院，行半规管瘘修补术。"
+  },
+  {
+    "id": "EC1",
+    "purpose": "测试常规MDC-MDCE-EC1：纵隔、气管、胸壁大手术",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCE → EC1 → EC19",
+    "input": {
+      "gender": "男",
+      "age_days": 21900,
+      "main_diagnosis": {
+        "code": "B48.501+J17.2*",
+        "name": "卡氏肺孢子虫病"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "32.1x01",
+        "name": "支气管袖状切除术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCE",
+      "adrg": "EC1",
+      "adrg_name": "纵隔、气管、胸壁大手术",
+      "drg": "EC19",
+      "drg_name": "纵隔、气管、胸壁大手术",
+      "complication": "NONE"
+    },
+    "natural_language": "男，60岁，因卡氏肺孢子虫病入院，行支气管袖状切除术。"
+  },
+  {
+    "id": "FD1",
+    "purpose": "测试常规MDC-MDCF-FD1：先天性心脏病复杂手术",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCF → FD1 → FD19",
+    "input": {
+      "gender": "男",
+      "age_days": 21900,
+      "main_diagnosis": {
+        "code": "I74.005",
+        "name": "肾下腹主动脉闭塞"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "39.2102",
+        "name": "上腔静脉-右肺动脉吻合术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCF",
+      "adrg": "FD1",
+      "adrg_name": "先天性心脏病复杂手术",
+      "drg": "FD19",
+      "drg_name": "先天性心脏病复杂手术",
+      "complication": "NONE"
+    },
+    "natural_language": "男，60岁，因肾下腹主动脉闭塞入院，行上腔静脉-右肺动脉吻合术。"
+  },
+  {
+    "id": "GC1",
+    "purpose": "测试常规MDC-MDCG-GC1：食管其他手术",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCG → GC1 → GC19",
+    "input": {
+      "gender": "男",
+      "age_days": 14600,
+      "main_diagnosis": {
+        "code": "K63.301",
+        "name": "回肠溃疡"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "42.8501",
+        "name": "食管吻合口狭窄修补术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCG",
+      "adrg": "GC1",
+      "adrg_name": "食管其他手术",
+      "drg": "GC19",
+      "drg_name": "食管其他手术",
+      "complication": "NONE"
+    },
+    "natural_language": "男，40岁，因回肠溃疡入院，行食管吻合口狭窄修补术。"
+  },
+  {
+    "id": "HJ1",
+    "purpose": "测试常规MDC-MDCH-HJ1：与肝、胆或胰腺疾病有关的其他手术",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCH → HJ1 → HJ15",
+    "input": {
+      "gender": "男",
+      "age_days": 21900,
+      "main_diagnosis": {
+        "code": "K91.800x402",
+        "name": "胆道吻合口漏"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "54.7401",
+        "name": "网膜固定术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCH",
+      "adrg": "HJ1",
+      "adrg_name": "与肝、胆或胰腺疾病有关的其他手术",
+      "drg": "HJ15",
+      "drg_name": "与肝、胆或胰腺疾病有关的其他手术，不伴合并症或并发症",
+      "complication": "NONE"
+    },
+    "natural_language": "男，60岁，因胆道吻合口漏入院，行网膜固定术。"
+  },
+  {
+    "id": "IE5",
+    "purpose": "测试常规MDC-MDCI-IE5：上肢骨手术",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCI → IE5 → IE59",
+    "input": {
+      "gender": "男",
+      "age_days": 21900,
+      "main_diagnosis": {
+        "code": "M24.310",
+        "name": "足关节病理性不全脱位"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "79.3200x011",
+        "name": "桡骨骨折切开复位钢板内固定术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCI",
+      "adrg": "IE5",
+      "adrg_name": "上肢骨手术",
+      "drg": "IE59",
+      "drg_name": "上肢骨手术",
+      "complication": "NONE"
+    },
+    "natural_language": "男，60岁，因足关节病理性不全脱位入院，行桡骨骨折切开复位钢板内固定术。"
+  },
+  {
+    "id": "JB1",
+    "purpose": "测试常规MDC-MDCJ-JB1：乳房成形手术",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCJ → JB1 → JB19",
+    "input": {
+      "gender": "男",
+      "age_days": 21900,
+      "main_diagnosis": {
+        "code": "B35.901",
+        "name": "黄癣"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "85.8500",
+        "name": "肌瓣移植至乳房"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCJ",
+      "adrg": "JB1",
+      "adrg_name": "乳房成形手术",
+      "drg": "JB19",
+      "drg_name": "乳房成形手术",
+      "complication": "NONE"
+    },
+    "natural_language": "男，60岁，因黄癣入院，行肌瓣移植至乳房。"
+  },
+  {
+    "id": "KD1",
+    "purpose": "测试常规MDC-MDCK-KD1：甲状腺、甲状旁腺大手术",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCK → KD1 → KD19",
+    "input": {
+      "gender": "男",
+      "age_days": 14600,
+      "main_diagnosis": {
+        "code": "E85.400x014",
+        "name": "局限性淀粉样变性"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "06.5101",
+        "name": "胸骨后甲状腺病损切除术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCK",
+      "adrg": "KD1",
+      "adrg_name": "甲状腺、甲状旁腺大手术",
+      "drg": "KD19",
+      "drg_name": "甲状腺、甲状旁腺大手术",
+      "complication": "NONE"
+    },
+    "natural_language": "男，40岁，因局限性淀粉样变性入院，行胸骨后甲状腺病损切除术。"
+  },
+  {
+    "id": "LF1",
+    "purpose": "测试常规MDC-MDCL-LF1：肾透析相关手术",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCL → LF1 → LF15",
+    "input": {
+      "gender": "男",
+      "age_days": 25550,
+      "main_diagnosis": {
+        "code": "N34.100",
+        "name": "非特异性尿道炎"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "54.9300x003",
+        "name": "腹膜透析导丝法置管术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCL",
+      "adrg": "LF1",
+      "adrg_name": "肾透析相关手术",
+      "drg": "LF15",
+      "drg_name": "肾透析相关手术，不伴严重合并症或并发症",
+      "complication": "NONE"
+    },
+    "natural_language": "男，70岁，因非特异性尿道炎入院，行腹膜透析导丝法置管术。"
+  },
+  {
+    "id": "MJ1",
+    "purpose": "测试常规MDC-MDCM-MJ1：其他男性生殖系统手术",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCM → MJ1 → MJ19",
+    "input": {
+      "gender": "男",
+      "age_days": 25550,
+      "main_diagnosis": {
+        "code": "E29.900",
+        "name": "睾丸功能障碍"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "54.7100",
+        "name": "腹裂（畸形）修补术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCM",
+      "adrg": "MJ1",
+      "adrg_name": "其他男性生殖系统手术",
+      "drg": "MJ19",
+      "drg_name": "其他男性生殖系统手术",
+      "complication": "NONE"
+    },
+    "natural_language": "男，70岁，因睾丸功能障碍入院，行腹裂（畸形）修补术。"
+  },
+  {
+    "id": "NF1",
+    "purpose": "测试常规MDC-MDCN-NF1：外阴、阴道、宫颈手术",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCN → NF1 → NF19",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "N94.802",
+        "name": "女性盆腔血肿"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "67.3203",
+        "name": "宫腔镜子宫颈病损电切术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCN",
+      "adrg": "NF1",
+      "adrg_name": "外阴、阴道、宫颈手术",
+      "drg": "NF19",
+      "drg_name": "外阴、阴道、宫颈手术",
+      "complication": "NONE"
+    },
+    "natural_language": "男，50岁，因女性盆腔血肿入院，行宫腔镜子宫颈病损电切术。"
+  },
+  {
+    "id": "QB1",
+    "purpose": "测试常规MDC-MDCQ-QB1：脾切除术",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCQ → QB1 → QB19",
+    "input": {
+      "gender": "男",
+      "age_days": 21900,
+      "main_diagnosis": {
+        "code": "D76.301",
+        "name": "黄色肉芽肿"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "41.9300",
+        "name": "副脾切除术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCQ",
+      "adrg": "QB1",
+      "adrg_name": "脾切除术",
+      "drg": "QB19",
+      "drg_name": "脾切除术",
+      "complication": "NONE"
+    },
+    "natural_language": "男，60岁，因黄色肉芽肿入院，行副脾切除术。"
+  },
+  {
+    "id": "RK2",
+    "purpose": "测试常规MDC-MDCR-RK2：淋巴瘤、多发骨髓瘤化学治疗和/或其他治疗",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCR → RK2 → RK25",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "C90.000x024",
+        "name": "多发性骨髓瘤（轻链к型）"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "99.2800x004",
+        "name": "肌肉注射抗肿瘤免疫抑制剂治疗"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCR",
+      "adrg": "RK2",
+      "adrg_name": "淋巴瘤、多发骨髓瘤化学治疗和/或其他治疗",
+      "drg": "RK25",
+      "drg_name": "淋巴瘤、多发骨髓瘤化学治疗和/或其他治疗，不伴严重合并症或并发症",
+      "complication": "NONE"
+    },
+    "natural_language": "男，50岁，因多发性骨髓瘤（轻链к型）入院，行肌肉注射抗肿瘤免疫抑制剂治疗。"
+  },
+  {
+    "id": "RN2",
+    "purpose": "测试常规MDC-MDCR-RN2：恶性及增生性疾病的靶向、免疫治疗",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCR → RN2 → RN25",
+    "input": {
+      "gender": "男",
+      "age_days": 25550,
+      "main_diagnosis": {
+        "code": "Z51.807",
+        "name": "恶性肿瘤术后靶向治疗"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "99.2800x006",
+        "name": "分子靶向治疗"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCR",
+      "adrg": "RN2",
+      "adrg_name": "恶性及增生性疾病的靶向、免疫治疗",
+      "drg": "RN25",
+      "drg_name": "恶性及增生性疾病的靶向、免疫治疗，不伴严重合并症或并发症",
+      "complication": "NONE"
+    },
+    "natural_language": "男，70岁，因恶性肿瘤术后靶向治疗入院，行分子靶向治疗。"
+  },
+  {
+    "id": "SR1",
+    "purpose": "测试常规MDC-MDCS-SR1：败血症",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCS → SR1 → SR15",
+    "input": {
+      "gender": "男",
+      "age_days": 25550,
+      "main_diagnosis": {
+        "code": "A40.900",
+        "name": "链球菌性脓毒症"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "",
+        "name": ""
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCS",
+      "adrg": "SR1",
+      "adrg_name": "败血症",
+      "drg": "SR15",
+      "drg_name": "败血症，不伴合并症或并发症",
+      "complication": "NONE"
+    },
+    "natural_language": "男，70岁，因链球菌性脓毒症入院。"
+  },
+  {
+    "id": "SB1",
+    "purpose": "测试常规MDC-MDCS-SB1：全身性感染疾病的手术",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCS → SB1 → SU19",
+    "input": {
+      "gender": "男",
+      "age_days": 25550,
+      "main_diagnosis": {
+        "code": "B34.200",
+        "name": "冠状病毒感染"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "",
+        "name": ""
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCS",
+      "adrg": "SU1",
+      "adrg_name": "病毒性疾病",
+      "drg": "SU19",
+      "drg_name": "病毒性疾病",
+      "complication": "NONE"
+    },
+    "natural_language": "男，70岁，因冠状病毒感染入院。"
+  },
+  {
+    "id": "TR1",
+    "purpose": "测试常规MDC-MDCT-TR1：精神分裂症",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCT → TR1 → TR19",
+    "input": {
+      "gender": "男",
+      "age_days": 25550,
+      "main_diagnosis": {
+        "code": "F20.600",
+        "name": "单纯型精神分裂症"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "",
+        "name": ""
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCT",
+      "adrg": "TR1",
+      "adrg_name": "精神分裂症",
+      "drg": "TR19",
+      "drg_name": "精神分裂症",
+      "complication": "NONE"
+    },
+    "natural_language": "男，70岁，因单纯型精神分裂症入院。"
+  },
+  {
+    "id": "UR1",
+    "purpose": "测试常规MDC-MDCU-UR1：酒精中毒及戒除",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCU → UR1 → UR19",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "F10.900",
+        "name": "使用酒精引起的精神和行为障碍"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "",
+        "name": ""
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCU",
+      "adrg": "UR1",
+      "adrg_name": "酒精中毒及戒除",
+      "drg": "UR19",
+      "drg_name": "酒精中毒及戒除",
+      "complication": "NONE"
+    },
+    "natural_language": "男，50岁，因使用酒精引起的精神和行为障碍入院。"
+  },
+  {
+    "id": "US1",
+    "purpose": "测试常规MDC-MDCU-US1：兴奋剂滥用与依赖",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCU → US1 → US19",
+    "input": {
+      "gender": "男",
+      "age_days": 14600,
+      "main_diagnosis": {
+        "code": "F19.900x007",
+        "name": "药物源性精神障碍"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "",
+        "name": ""
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCU",
+      "adrg": "US1",
+      "adrg_name": "兴奋剂滥用与依赖",
+      "drg": "US19",
+      "drg_name": "兴奋剂滥用与依赖",
+      "complication": "NONE"
+    },
+    "natural_language": "男，40岁，因药物源性精神障碍入院。"
+  },
+  {
+    "id": "VB1",
+    "purpose": "测试常规MDC-MDCV-VB1：损伤的皮肤移植",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCV → VB1 → VB15",
+    "input": {
+      "gender": "男",
+      "age_days": 21900,
+      "main_diagnosis": {
+        "code": "T63.600x001",
+        "name": "接触海蜇后中毒"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "86.7407",
+        "name": "颌面局部皮瓣转移术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCV",
+      "adrg": "VB1",
+      "adrg_name": "损伤的皮肤移植",
+      "drg": "VB15",
+      "drg_name": "损伤的皮肤移植，不伴合并症或并发症",
+      "complication": "NONE"
+    },
+    "natural_language": "男，60岁，因接触海蜇后中毒入院，行颌面局部皮瓣转移术。"
+  },
+  {
+    "id": "VC1",
+    "purpose": "测试常规MDC-MDCV-VC1：与损伤有关的清创术",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCV → VC1 → VC15",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "T09.100",
+        "name": "躯干开放性伤口"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "79.6601",
+        "name": "胫骨开放性骨折清创术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCV",
+      "adrg": "VC1",
+      "adrg_name": "与损伤有关的清创术",
+      "drg": "VC15",
+      "drg_name": "与损伤有关的清创术，不伴合并症或并发症",
+      "complication": "NONE"
+    },
+    "natural_language": "男，50岁，因躯干开放性伤口入院，行胫骨开放性骨折清创术。"
+  },
+  {
+    "id": "WB2",
+    "purpose": "测试常规MDC-MDCW-WB2：烧伤面积≥30%，＜50%，或三度面积≥10%，＜20%的烧伤，伴有手术操作 ",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCW → WB2 → None",
+    "input": {
+      "gender": "男",
+      "age_days": 14600,
+      "main_diagnosis": {
+        "code": "T21.700x032",
+        "name": "胁腹三度腐蚀伤"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "86.2201",
+        "name": "皮肤伤口切除性清创术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCW",
+      "adrg": null,
+      "adrg_name": null,
+      "drg": null,
+      "drg_name": null,
+      "complication": "NONE"
+    },
+    "natural_language": "男，40岁，因胁腹三度腐蚀伤入院，行皮肤伤口切除性清创术。"
+  },
+  {
+    "id": "WB3",
+    "purpose": "测试常规MDC-MDCW-WB3：烧伤面积＜30%或其他烧伤，伴有手术操作",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCW → WB3 → WB39",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "T21.500x021",
+        "name": "胸壁一度腐蚀伤"
+      },
+      "other_diagnoses": [
+        {
+          "code": "T31.000",
+          "name": "累及体表10%以下的烧伤"
+        },
+        {
+          "code": "T31.100",
+          "name": "累及体表10%~19%的烧伤"
+        }
+      ],
+      "main_procedure": {
+        "code": "86.9100x001",
+        "name": "供体皮肤切除术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCW",
+      "adrg": "WB3",
+      "adrg_name": "烧伤面积＜30%或其他烧伤，伴有手术操作",
+      "drg": "WB39",
+      "drg_name": "烧伤面积＜30%或其他烧伤，伴有手术操作",
+      "complication": "MCC"
+    },
+    "natural_language": "男，50岁，因胸壁一度腐蚀伤入院，合并累及体表10%以下的烧伤、累及体表10%~19%的烧伤，行供体皮肤切除术。"
+  },
+  {
+    "id": "XR2",
+    "purpose": "测试常规MDC-MDCX-XR2：神经、骨骼及肌肉康复",
+    "path": "先期分组/MDC匹配 → 常规MDC-MDCX → XR2 → XR25",
+    "input": {
+      "gender": "男",
+      "age_days": 25550,
+      "main_diagnosis": {
+        "code": "T91.400",
+        "name": "胸内器官损伤后遗症"
+      },
+      "other_diagnoses": [],
+      "main_procedure": {
+        "code": "",
+        "name": ""
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCX",
+      "adrg": "XR2",
+      "adrg_name": "神经、骨骼及肌肉康复",
+      "drg": "XR25",
+      "drg_name": "神经、骨骼及肌肉康复，不伴合并症或并发症",
+      "complication": "NONE"
+    },
+    "natural_language": "男，70岁，因胸内器官损伤后遗症入院。"
+  },
+  {
+    "id": "AA1-MCC被排除",
+    "purpose": "测试并发症-MCC被排除",
+    "path": "MDC匹配 → AA1 → 并发症判定(MCC被排除) → AA19",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "J96.900",
+        "name": "J96.900"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K86.000",
+          "name": "酒精性慢性胰腺炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "33.6x00",
+        "name": "心脏-肺联合移植术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCA",
+      "adrg": "AA1",
+      "adrg_name": "心肺移植",
+      "drg": "AA19",
+      "drg_name": "心肺移植",
+      "complication": "MCC"
+    },
+    "natural_language": "男，50岁，因J96.900入院，行心脏-肺联合移植术（并发症：MCC被排除——酒精性慢性胰腺炎）。"
+  },
+  {
+    "id": "AA1-CC被排除",
+    "purpose": "测试并发症-CC被排除",
+    "path": "MDC匹配 → AA1 → 并发症判定(CC被排除) → AA19",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "J96.900",
+        "name": "J96.900"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K80.000x002",
+          "name": "胆囊结石伴急性胆囊炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "33.6x00",
+        "name": "心脏-肺联合移植术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCA",
+      "adrg": "AA1",
+      "adrg_name": "心肺移植",
+      "drg": "AA19",
+      "drg_name": "心肺移植",
+      "complication": "CC"
+    },
+    "natural_language": "男，50岁，因J96.900入院，行心脏-肺联合移植术（并发症：CC被排除——胆囊结石伴急性胆囊炎）。"
+  },
+  {
+    "id": "AA1-CC成立",
+    "purpose": "测试并发症-CC成立",
+    "path": "MDC匹配 → AA1 → 并发症判定(CC成立) → AA19",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "J96.900",
+        "name": "J96.900"
+      },
+      "other_diagnoses": [
+        {
+          "code": "E11.600x051",
+          "name": "2型糖尿病伴血糖控制不佳"
+        }
+      ],
+      "main_procedure": {
+        "code": "33.6x00",
+        "name": "心脏-肺联合移植术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCA",
+      "adrg": "AA1",
+      "adrg_name": "心肺移植",
+      "drg": "AA19",
+      "drg_name": "心肺移植",
+      "complication": "CC"
+    },
+    "natural_language": "男，50岁，因J96.900入院，行心脏-肺联合移植术（并发症：CC成立——2型糖尿病伴血糖控制不佳）。"
+  },
+  {
+    "id": "AB1-CC成立",
+    "purpose": "测试并发症-CC成立",
+    "path": "MDC匹配 → AB1 → 并发症判定(CC成立) → AB19",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "K72.900",
+        "name": "K72.900"
+      },
+      "other_diagnoses": [
+        {
+          "code": "E11.600x051",
+          "name": "2型糖尿病伴血糖控制不佳"
+        }
+      ],
+      "main_procedure": {
+        "code": "50.5902",
+        "name": "劈离式肝移植术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCA",
+      "adrg": "AB1",
+      "adrg_name": "肝移植",
+      "drg": "AB19",
+      "drg_name": "肝移植",
+      "complication": "CC"
+    },
+    "natural_language": "男，50岁，因K72.900入院，行劈离式肝移植术（并发症：CC成立——2型糖尿病伴血糖控制不佳）。"
+  },
+  {
+    "id": "AB1-MCC被排除",
+    "purpose": "测试并发症-MCC被排除",
+    "path": "MDC匹配 → AB1 → 并发症判定(MCC被排除) → AB19",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "K72.900",
+        "name": "K72.900"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K86.000",
+          "name": "酒精性慢性胰腺炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "50.5902",
+        "name": "劈离式肝移植术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCA",
+      "adrg": "AB1",
+      "adrg_name": "肝移植",
+      "drg": "AB19",
+      "drg_name": "肝移植",
+      "complication": "MCC"
+    },
+    "natural_language": "男，50岁，因K72.900入院，行劈离式肝移植术（并发症：MCC被排除——酒精性慢性胰腺炎）。"
+  },
+  {
+    "id": "AB1-CC被排除",
+    "purpose": "测试并发症-CC被排除",
+    "path": "MDC匹配 → AB1 → 并发症判定(CC被排除) → AB19",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "K72.900",
+        "name": "K72.900"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K80.000x002",
+          "name": "胆囊结石伴急性胆囊炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "50.5902",
+        "name": "劈离式肝移植术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCA",
+      "adrg": "AB1",
+      "adrg_name": "肝移植",
+      "drg": "AB19",
+      "drg_name": "肝移植",
+      "complication": "CC"
+    },
+    "natural_language": "男，50岁，因K72.900入院，行劈离式肝移植术（并发症：CC被排除——胆囊结石伴急性胆囊炎）。"
+  },
+  {
+    "id": "PK1-MCC成立",
+    "purpose": "测试并发症-MCC成立",
+    "path": "MDC匹配 → PK1 → 并发症判定(MCC成立) → PK11",
+    "input": {
+      "gender": "男",
+      "age_days": 3,
+      "main_diagnosis": {
+        "code": "P22.000",
+        "name": "新生儿呼吸窘迫综合征"
+      },
+      "other_diagnoses": [
+        {
+          "code": "A00.100x001",
+          "name": "埃尔托生物型霍乱"
+        }
+      ],
+      "main_procedure": {
+        "code": "93.9000",
+        "name": "无创机械性通气"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCP",
+      "adrg": "PK1",
+      "adrg_name": "新生儿伴呼吸机支持",
+      "drg": "PK11",
+      "drg_name": "新生儿伴呼吸机支持，伴严重合并症或并发症",
+      "complication": "MCC"
+    },
+    "natural_language": "男，3天岁，因新生儿呼吸窘迫综合征入院，行无创机械性通气（并发症：MCC成立——埃尔托生物型霍乱）。"
+  },
+  {
+    "id": "PK1-CC被排除",
+    "purpose": "测试并发症-CC被排除",
+    "path": "MDC匹配 → PK1 → 并发症判定(CC被排除) → PK15",
+    "input": {
+      "gender": "男",
+      "age_days": 3,
+      "main_diagnosis": {
+        "code": "P22.000",
+        "name": "新生儿呼吸窘迫综合征"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K80.000x002",
+          "name": "胆囊结石伴急性胆囊炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "93.9000",
+        "name": "无创机械性通气"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCP",
+      "adrg": "PK1",
+      "adrg_name": "新生儿伴呼吸机支持",
+      "drg": "PK15",
+      "drg_name": "新生儿伴呼吸机支持，不伴严重合并症或并发症",
+      "complication": "CC"
+    },
+    "natural_language": "男，3天岁，因新生儿呼吸窘迫综合征入院，行无创机械性通气（并发症：CC被排除——胆囊结石伴急性胆囊炎）。"
+  },
+  {
+    "id": "PK1-MCC被排除",
+    "purpose": "测试并发症-MCC被排除",
+    "path": "MDC匹配 → PK1 → 并发症判定(MCC被排除) → PK11",
+    "input": {
+      "gender": "男",
+      "age_days": 3,
+      "main_diagnosis": {
+        "code": "P22.000",
+        "name": "新生儿呼吸窘迫综合征"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K86.000",
+          "name": "酒精性慢性胰腺炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "93.9000",
+        "name": "无创机械性通气"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCP",
+      "adrg": "PK1",
+      "adrg_name": "新生儿伴呼吸机支持",
+      "drg": "PK11",
+      "drg_name": "新生儿伴呼吸机支持，伴严重合并症或并发症",
+      "complication": "MCC"
+    },
+    "natural_language": "男，3天岁，因新生儿呼吸窘迫综合征入院，行无创机械性通气（并发症：MCC被排除——酒精性慢性胰腺炎）。"
+  },
+  {
+    "id": "PD1-CC成立",
+    "purpose": "测试并发症-CC成立",
+    "path": "MDC匹配 → PD1 → 并发症判定(CC成立) → PD15",
+    "input": {
+      "gender": "男",
+      "age_days": 3,
+      "main_diagnosis": {
+        "code": "P07.000",
+        "name": "极低出生体重（小于999克）"
+      },
+      "other_diagnoses": [
+        {
+          "code": "E11.600x051",
+          "name": "2型糖尿病伴血糖控制不佳"
+        }
+      ],
+      "main_procedure": {
+        "code": "38.6700x005",
+        "name": "腹腔静脉瘤切除术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCP",
+      "adrg": "PD1",
+      "adrg_name": "新生儿（出生年龄＜29 天）腹部手术",
+      "drg": "PD15",
+      "drg_name": "新生儿（出生年龄＜29天）腹部手术，不伴合并症或并发症",
+      "complication": "CC"
+    },
+    "natural_language": "男，3天岁，因极低出生体重（小于999克）入院，行腹腔静脉瘤切除术（并发症：CC成立——2型糖尿病伴血糖控制不佳）。"
+  },
+  {
+    "id": "PD1-MCC成立",
+    "purpose": "测试并发症-MCC成立",
+    "path": "MDC匹配 → PD1 → 并发症判定(MCC成立) → PD15",
+    "input": {
+      "gender": "男",
+      "age_days": 3,
+      "main_diagnosis": {
+        "code": "P07.000",
+        "name": "极低出生体重（小于999克）"
+      },
+      "other_diagnoses": [
+        {
+          "code": "A00.100x001",
+          "name": "埃尔托生物型霍乱"
+        }
+      ],
+      "main_procedure": {
+        "code": "38.6700x005",
+        "name": "腹腔静脉瘤切除术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCP",
+      "adrg": "PD1",
+      "adrg_name": "新生儿（出生年龄＜29 天）腹部手术",
+      "drg": "PD15",
+      "drg_name": "新生儿（出生年龄＜29天）腹部手术，不伴合并症或并发症",
+      "complication": "MCC"
+    },
+    "natural_language": "男，3天岁，因极低出生体重（小于999克）入院，行腹腔静脉瘤切除术（并发症：MCC成立——埃尔托生物型霍乱）。"
+  },
+  {
+    "id": "PD1-CC被排除",
+    "purpose": "测试并发症-CC被排除",
+    "path": "MDC匹配 → PD1 → 并发症判定(CC被排除) → PD15",
+    "input": {
+      "gender": "男",
+      "age_days": 3,
+      "main_diagnosis": {
+        "code": "P07.000",
+        "name": "极低出生体重（小于999克）"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K80.000x002",
+          "name": "胆囊结石伴急性胆囊炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "38.6700x005",
+        "name": "腹腔静脉瘤切除术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCP",
+      "adrg": "PD1",
+      "adrg_name": "新生儿（出生年龄＜29 天）腹部手术",
+      "drg": "PD15",
+      "drg_name": "新生儿（出生年龄＜29天）腹部手术，不伴合并症或并发症",
+      "complication": "CC"
+    },
+    "natural_language": "男，3天岁，因极低出生体重（小于999克）入院，行腹腔静脉瘤切除术（并发症：CC被排除——胆囊结石伴急性胆囊炎）。"
+  },
+  {
+    "id": "BB5-CC成立",
+    "purpose": "测试并发症-CC成立",
+    "path": "MDC匹配 → BB5 → 并发症判定(CC成立) → BB55",
+    "input": {
+      "gender": "男",
+      "age_days": 14600,
+      "main_diagnosis": {
+        "code": "G93.600x006",
+        "name": "缺血性脑水肿"
+      },
+      "other_diagnoses": [
+        {
+          "code": "E11.600x051",
+          "name": "2型糖尿病伴血糖控制不佳"
+        }
+      ],
+      "main_procedure": {
+        "code": "01.5931",
+        "name": "内镜下颅底病损切除术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCB",
+      "adrg": "BB5",
+      "adrg_name": "其他颅脑相关手术",
+      "drg": "BB55",
+      "drg_name": "其他颅脑相关手术，不伴严重合并症或并发症",
+      "complication": "CC"
+    },
+    "natural_language": "男，40岁，因缺血性脑水肿入院，行内镜下颅底病损切除术（并发症：CC成立——2型糖尿病伴血糖控制不佳）。"
+  },
+  {
+    "id": "BB5-MCC被排除",
+    "purpose": "测试并发症-MCC被排除",
+    "path": "MDC匹配 → BB5 → 并发症判定(MCC被排除) → BB51",
+    "input": {
+      "gender": "男",
+      "age_days": 14600,
+      "main_diagnosis": {
+        "code": "G93.600x006",
+        "name": "缺血性脑水肿"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K86.000",
+          "name": "酒精性慢性胰腺炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "01.5931",
+        "name": "内镜下颅底病损切除术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCB",
+      "adrg": "BB5",
+      "adrg_name": "其他颅脑相关手术",
+      "drg": "BB51",
+      "drg_name": "其他颅脑相关手术，伴严重合并症或并发症",
+      "complication": "MCC"
+    },
+    "natural_language": "男，40岁，因缺血性脑水肿入院，行内镜下颅底病损切除术（并发症：MCC被排除——酒精性慢性胰腺炎）。"
+  },
+  {
+    "id": "BB5-CC被排除",
+    "purpose": "测试并发症-CC被排除",
+    "path": "MDC匹配 → BB5 → 并发症判定(CC被排除) → BB55",
+    "input": {
+      "gender": "男",
+      "age_days": 14600,
+      "main_diagnosis": {
+        "code": "G93.600x006",
+        "name": "缺血性脑水肿"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K80.000x002",
+          "name": "胆囊结石伴急性胆囊炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "01.5931",
+        "name": "内镜下颅底病损切除术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCB",
+      "adrg": "BB5",
+      "adrg_name": "其他颅脑相关手术",
+      "drg": "BB55",
+      "drg_name": "其他颅脑相关手术，不伴严重合并症或并发症",
+      "complication": "CC"
+    },
+    "natural_language": "男，40岁，因缺血性脑水肿入院，行内镜下颅底病损切除术（并发症：CC被排除——胆囊结石伴急性胆囊炎）。"
+  },
+  {
+    "id": "CD2-CC被排除",
+    "purpose": "测试并发症-CC被排除",
+    "path": "MDC匹配 → CD2 → 并发症判定(CC被排除) → CD29",
+    "input": {
+      "gender": "男",
+      "age_days": 14600,
+      "main_diagnosis": {
+        "code": "H11.100x001",
+        "name": "结膜变性"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K80.000x002",
+          "name": "胆囊结石伴急性胆囊炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "15.9x00x008",
+        "name": "眼睑轮匝肌切断术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCC",
+      "adrg": "CD2",
+      "adrg_name": "眼肌手术",
+      "drg": "CD29",
+      "drg_name": "眼肌手术",
+      "complication": "CC"
+    },
+    "natural_language": "男，40岁，因结膜变性入院，行眼睑轮匝肌切断术（并发症：CC被排除——胆囊结石伴急性胆囊炎）。"
+  },
+  {
+    "id": "CD2-CC成立",
+    "purpose": "测试并发症-CC成立",
+    "path": "MDC匹配 → CD2 → 并发症判定(CC成立) → CD29",
+    "input": {
+      "gender": "男",
+      "age_days": 14600,
+      "main_diagnosis": {
+        "code": "H11.100x001",
+        "name": "结膜变性"
+      },
+      "other_diagnoses": [
+        {
+          "code": "E11.600x051",
+          "name": "2型糖尿病伴血糖控制不佳"
+        }
+      ],
+      "main_procedure": {
+        "code": "15.9x00x008",
+        "name": "眼睑轮匝肌切断术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCC",
+      "adrg": "CD2",
+      "adrg_name": "眼肌手术",
+      "drg": "CD29",
+      "drg_name": "眼肌手术",
+      "complication": "CC"
+    },
+    "natural_language": "男，40岁，因结膜变性入院，行眼睑轮匝肌切断术（并发症：CC成立——2型糖尿病伴血糖控制不佳）。"
+  },
+  {
+    "id": "DE1-MCC成立",
+    "purpose": "测试并发症-MCC成立",
+    "path": "MDC匹配 → DE1 → 并发症判定(MCC成立) → DE19",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "S10.001",
+        "name": "喉挫伤"
+      },
+      "other_diagnoses": [
+        {
+          "code": "A00.100x001",
+          "name": "埃尔托生物型霍乱"
+        }
+      ],
+      "main_procedure": {
+        "code": "20.9303",
+        "name": "半规管瘘修补术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCD",
+      "adrg": "DE1",
+      "adrg_name": "中耳/内耳/侧颅底手术",
+      "drg": "DE19",
+      "drg_name": "中耳/内耳/侧颅底手术",
+      "complication": "MCC"
+    },
+    "natural_language": "男，50岁，因喉挫伤入院，行半规管瘘修补术（并发症：MCC成立——埃尔托生物型霍乱）。"
+  },
+  {
+    "id": "DE1-CC被排除",
+    "purpose": "测试并发症-CC被排除",
+    "path": "MDC匹配 → DE1 → 并发症判定(CC被排除) → DE19",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "S10.001",
+        "name": "喉挫伤"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K80.000x002",
+          "name": "胆囊结石伴急性胆囊炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "20.9303",
+        "name": "半规管瘘修补术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCD",
+      "adrg": "DE1",
+      "adrg_name": "中耳/内耳/侧颅底手术",
+      "drg": "DE19",
+      "drg_name": "中耳/内耳/侧颅底手术",
+      "complication": "CC"
+    },
+    "natural_language": "男，50岁，因喉挫伤入院，行半规管瘘修补术（并发症：CC被排除——胆囊结石伴急性胆囊炎）。"
+  },
+  {
+    "id": "DE1-MCC被排除",
+    "purpose": "测试并发症-MCC被排除",
+    "path": "MDC匹配 → DE1 → 并发症判定(MCC被排除) → DE19",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "S10.001",
+        "name": "喉挫伤"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K86.000",
+          "name": "酒精性慢性胰腺炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "20.9303",
+        "name": "半规管瘘修补术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCD",
+      "adrg": "DE1",
+      "adrg_name": "中耳/内耳/侧颅底手术",
+      "drg": "DE19",
+      "drg_name": "中耳/内耳/侧颅底手术",
+      "complication": "MCC"
+    },
+    "natural_language": "男，50岁，因喉挫伤入院，行半规管瘘修补术（并发症：MCC被排除——酒精性慢性胰腺炎）。"
+  },
+  {
+    "id": "EC1-CC被排除",
+    "purpose": "测试并发症-CC被排除",
+    "path": "MDC匹配 → EC1 → 并发症判定(CC被排除) → EC19",
+    "input": {
+      "gender": "男",
+      "age_days": 21900,
+      "main_diagnosis": {
+        "code": "B48.501+J17.2*",
+        "name": "卡氏肺孢子虫病"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K80.000x002",
+          "name": "胆囊结石伴急性胆囊炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "32.1x01",
+        "name": "支气管袖状切除术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCE",
+      "adrg": "EC1",
+      "adrg_name": "纵隔、气管、胸壁大手术",
+      "drg": "EC19",
+      "drg_name": "纵隔、气管、胸壁大手术",
+      "complication": "CC"
+    },
+    "natural_language": "男，60岁，因卡氏肺孢子虫病入院，行支气管袖状切除术（并发症：CC被排除——胆囊结石伴急性胆囊炎）。"
+  },
+  {
+    "id": "EC1-CC成立",
+    "purpose": "测试并发症-CC成立",
+    "path": "MDC匹配 → EC1 → 并发症判定(CC成立) → EC19",
+    "input": {
+      "gender": "男",
+      "age_days": 21900,
+      "main_diagnosis": {
+        "code": "B48.501+J17.2*",
+        "name": "卡氏肺孢子虫病"
+      },
+      "other_diagnoses": [
+        {
+          "code": "E11.600x051",
+          "name": "2型糖尿病伴血糖控制不佳"
+        }
+      ],
+      "main_procedure": {
+        "code": "32.1x01",
+        "name": "支气管袖状切除术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCE",
+      "adrg": "EC1",
+      "adrg_name": "纵隔、气管、胸壁大手术",
+      "drg": "EC19",
+      "drg_name": "纵隔、气管、胸壁大手术",
+      "complication": "CC"
+    },
+    "natural_language": "男，60岁，因卡氏肺孢子虫病入院，行支气管袖状切除术（并发症：CC成立——2型糖尿病伴血糖控制不佳）。"
+  },
+  {
+    "id": "EC1-MCC被排除",
+    "purpose": "测试并发症-MCC被排除",
+    "path": "MDC匹配 → EC1 → 并发症判定(MCC被排除) → EC19",
+    "input": {
+      "gender": "男",
+      "age_days": 21900,
+      "main_diagnosis": {
+        "code": "B48.501+J17.2*",
+        "name": "卡氏肺孢子虫病"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K86.000",
+          "name": "酒精性慢性胰腺炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "32.1x01",
+        "name": "支气管袖状切除术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCE",
+      "adrg": "EC1",
+      "adrg_name": "纵隔、气管、胸壁大手术",
+      "drg": "EC19",
+      "drg_name": "纵隔、气管、胸壁大手术",
+      "complication": "MCC"
+    },
+    "natural_language": "男，60岁，因卡氏肺孢子虫病入院，行支气管袖状切除术（并发症：MCC被排除——酒精性慢性胰腺炎）。"
+  },
+  {
+    "id": "FD1-MCC被排除",
+    "purpose": "测试并发症-MCC被排除",
+    "path": "MDC匹配 → FD1 → 并发症判定(MCC被排除) → FD19",
+    "input": {
+      "gender": "男",
+      "age_days": 21900,
+      "main_diagnosis": {
+        "code": "I74.005",
+        "name": "肾下腹主动脉闭塞"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K86.000",
+          "name": "酒精性慢性胰腺炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "39.2102",
+        "name": "上腔静脉-右肺动脉吻合术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCF",
+      "adrg": "FD1",
+      "adrg_name": "先天性心脏病复杂手术",
+      "drg": "FD19",
+      "drg_name": "先天性心脏病复杂手术",
+      "complication": "MCC"
+    },
+    "natural_language": "男，60岁，因肾下腹主动脉闭塞入院，行上腔静脉-右肺动脉吻合术（并发症：MCC被排除——酒精性慢性胰腺炎）。"
+  },
+  {
+    "id": "FD1-MCC成立",
+    "purpose": "测试并发症-MCC成立",
+    "path": "MDC匹配 → FD1 → 并发症判定(MCC成立) → FD19",
+    "input": {
+      "gender": "男",
+      "age_days": 21900,
+      "main_diagnosis": {
+        "code": "I74.005",
+        "name": "肾下腹主动脉闭塞"
+      },
+      "other_diagnoses": [
+        {
+          "code": "A00.100x001",
+          "name": "埃尔托生物型霍乱"
+        }
+      ],
+      "main_procedure": {
+        "code": "39.2102",
+        "name": "上腔静脉-右肺动脉吻合术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCF",
+      "adrg": "FD1",
+      "adrg_name": "先天性心脏病复杂手术",
+      "drg": "FD19",
+      "drg_name": "先天性心脏病复杂手术",
+      "complication": "MCC"
+    },
+    "natural_language": "男，60岁，因肾下腹主动脉闭塞入院，行上腔静脉-右肺动脉吻合术（并发症：MCC成立——埃尔托生物型霍乱）。"
+  },
+  {
+    "id": "GC1-MCC被排除",
+    "purpose": "测试并发症-MCC被排除",
+    "path": "MDC匹配 → GC1 → 并发症判定(MCC被排除) → GC19",
+    "input": {
+      "gender": "男",
+      "age_days": 14600,
+      "main_diagnosis": {
+        "code": "K63.301",
+        "name": "回肠溃疡"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K86.000",
+          "name": "酒精性慢性胰腺炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "42.8501",
+        "name": "食管吻合口狭窄修补术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCG",
+      "adrg": "GC1",
+      "adrg_name": "食管其他手术",
+      "drg": "GC19",
+      "drg_name": "食管其他手术",
+      "complication": "MCC"
+    },
+    "natural_language": "男，40岁，因回肠溃疡入院，行食管吻合口狭窄修补术（并发症：MCC被排除——酒精性慢性胰腺炎）。"
+  },
+  {
+    "id": "GC1-CC成立",
+    "purpose": "测试并发症-CC成立",
+    "path": "MDC匹配 → GC1 → 并发症判定(CC成立) → GC19",
+    "input": {
+      "gender": "男",
+      "age_days": 14600,
+      "main_diagnosis": {
+        "code": "K63.301",
+        "name": "回肠溃疡"
+      },
+      "other_diagnoses": [
+        {
+          "code": "E11.600x051",
+          "name": "2型糖尿病伴血糖控制不佳"
+        }
+      ],
+      "main_procedure": {
+        "code": "42.8501",
+        "name": "食管吻合口狭窄修补术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCG",
+      "adrg": "GC1",
+      "adrg_name": "食管其他手术",
+      "drg": "GC19",
+      "drg_name": "食管其他手术",
+      "complication": "CC"
+    },
+    "natural_language": "男，40岁，因回肠溃疡入院，行食管吻合口狭窄修补术（并发症：CC成立——2型糖尿病伴血糖控制不佳）。"
+  },
+  {
+    "id": "GC1-CC被排除",
+    "purpose": "测试并发症-CC被排除",
+    "path": "MDC匹配 → GC1 → 并发症判定(CC被排除) → GC19",
+    "input": {
+      "gender": "男",
+      "age_days": 14600,
+      "main_diagnosis": {
+        "code": "K63.301",
+        "name": "回肠溃疡"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K80.000x002",
+          "name": "胆囊结石伴急性胆囊炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "42.8501",
+        "name": "食管吻合口狭窄修补术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCG",
+      "adrg": "GC1",
+      "adrg_name": "食管其他手术",
+      "drg": "GC19",
+      "drg_name": "食管其他手术",
+      "complication": "CC"
+    },
+    "natural_language": "男，40岁，因回肠溃疡入院，行食管吻合口狭窄修补术（并发症：CC被排除——胆囊结石伴急性胆囊炎）。"
+  },
+  {
+    "id": "HJ1-CC被排除",
+    "purpose": "测试并发症-CC被排除",
+    "path": "MDC匹配 → HJ1 → 并发症判定(CC被排除) → HJ13",
+    "input": {
+      "gender": "男",
+      "age_days": 21900,
+      "main_diagnosis": {
+        "code": "K91.800x402",
+        "name": "胆道吻合口漏"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K80.000x002",
+          "name": "胆囊结石伴急性胆囊炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "54.7401",
+        "name": "网膜固定术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCH",
+      "adrg": "HJ1",
+      "adrg_name": "与肝、胆或胰腺疾病有关的其他手术",
+      "drg": "HJ13",
+      "drg_name": "与肝、胆或胰腺疾病有关的其他手术，伴一般合并症或并发症",
+      "complication": "CC"
+    },
+    "natural_language": "男，60岁，因胆道吻合口漏入院，行网膜固定术（并发症：CC被排除——胆囊结石伴急性胆囊炎）。"
+  },
+  {
+    "id": "HJ1-MCC被排除",
+    "purpose": "测试并发症-MCC被排除",
+    "path": "MDC匹配 → HJ1 → 并发症判定(MCC被排除) → HJ11",
+    "input": {
+      "gender": "男",
+      "age_days": 21900,
+      "main_diagnosis": {
+        "code": "K91.800x402",
+        "name": "胆道吻合口漏"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K86.000",
+          "name": "酒精性慢性胰腺炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "54.7401",
+        "name": "网膜固定术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCH",
+      "adrg": "HJ1",
+      "adrg_name": "与肝、胆或胰腺疾病有关的其他手术",
+      "drg": "HJ11",
+      "drg_name": "与肝、胆或胰腺疾病有关的其他手术，伴严重合并症或并发症",
+      "complication": "MCC"
+    },
+    "natural_language": "男，60岁，因胆道吻合口漏入院，行网膜固定术（并发症：MCC被排除——酒精性慢性胰腺炎）。"
+  },
+  {
+    "id": "IE5-CC成立",
+    "purpose": "测试并发症-CC成立",
+    "path": "MDC匹配 → IE5 → 并发症判定(CC成立) → IE59",
+    "input": {
+      "gender": "男",
+      "age_days": 21900,
+      "main_diagnosis": {
+        "code": "M24.310",
+        "name": "足关节病理性不全脱位"
+      },
+      "other_diagnoses": [
+        {
+          "code": "E11.600x051",
+          "name": "2型糖尿病伴血糖控制不佳"
+        }
+      ],
+      "main_procedure": {
+        "code": "79.3200x011",
+        "name": "桡骨骨折切开复位钢板内固定术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCI",
+      "adrg": "IE5",
+      "adrg_name": "上肢骨手术",
+      "drg": "IE59",
+      "drg_name": "上肢骨手术",
+      "complication": "CC"
+    },
+    "natural_language": "男，60岁，因足关节病理性不全脱位入院，行桡骨骨折切开复位钢板内固定术（并发症：CC成立——2型糖尿病伴血糖控制不佳）。"
+  },
+  {
+    "id": "IE5-MCC成立",
+    "purpose": "测试并发症-MCC成立",
+    "path": "MDC匹配 → IE5 → 并发症判定(MCC成立) → IE59",
+    "input": {
+      "gender": "男",
+      "age_days": 21900,
+      "main_diagnosis": {
+        "code": "M24.310",
+        "name": "足关节病理性不全脱位"
+      },
+      "other_diagnoses": [
+        {
+          "code": "A00.100x001",
+          "name": "埃尔托生物型霍乱"
+        }
+      ],
+      "main_procedure": {
+        "code": "79.3200x011",
+        "name": "桡骨骨折切开复位钢板内固定术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCI",
+      "adrg": "IE5",
+      "adrg_name": "上肢骨手术",
+      "drg": "IE59",
+      "drg_name": "上肢骨手术",
+      "complication": "MCC"
+    },
+    "natural_language": "男，60岁，因足关节病理性不全脱位入院，行桡骨骨折切开复位钢板内固定术（并发症：MCC成立——埃尔托生物型霍乱）。"
+  },
+  {
+    "id": "JB1-CC成立",
+    "purpose": "测试并发症-CC成立",
+    "path": "MDC匹配 → JB1 → 并发症判定(CC成立) → JB19",
+    "input": {
+      "gender": "男",
+      "age_days": 21900,
+      "main_diagnosis": {
+        "code": "B35.901",
+        "name": "黄癣"
+      },
+      "other_diagnoses": [
+        {
+          "code": "E11.600x051",
+          "name": "2型糖尿病伴血糖控制不佳"
+        }
+      ],
+      "main_procedure": {
+        "code": "85.8500",
+        "name": "肌瓣移植至乳房"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCJ",
+      "adrg": "JB1",
+      "adrg_name": "乳房成形手术",
+      "drg": "JB19",
+      "drg_name": "乳房成形手术",
+      "complication": "CC"
+    },
+    "natural_language": "男，60岁，因黄癣入院，行肌瓣移植至乳房（并发症：CC成立——2型糖尿病伴血糖控制不佳）。"
+  },
+  {
+    "id": "JB1-MCC成立",
+    "purpose": "测试并发症-MCC成立",
+    "path": "MDC匹配 → JB1 → 并发症判定(MCC成立) → JB19",
+    "input": {
+      "gender": "男",
+      "age_days": 21900,
+      "main_diagnosis": {
+        "code": "B35.901",
+        "name": "黄癣"
+      },
+      "other_diagnoses": [
+        {
+          "code": "A00.100x001",
+          "name": "埃尔托生物型霍乱"
+        }
+      ],
+      "main_procedure": {
+        "code": "85.8500",
+        "name": "肌瓣移植至乳房"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCJ",
+      "adrg": "JB1",
+      "adrg_name": "乳房成形手术",
+      "drg": "JB19",
+      "drg_name": "乳房成形手术",
+      "complication": "MCC"
+    },
+    "natural_language": "男，60岁，因黄癣入院，行肌瓣移植至乳房（并发症：MCC成立——埃尔托生物型霍乱）。"
+  },
+  {
+    "id": "KD1-MCC成立",
+    "purpose": "测试并发症-MCC成立",
+    "path": "MDC匹配 → KD1 → 并发症判定(MCC成立) → KD19",
+    "input": {
+      "gender": "男",
+      "age_days": 14600,
+      "main_diagnosis": {
+        "code": "E85.400x014",
+        "name": "局限性淀粉样变性"
+      },
+      "other_diagnoses": [
+        {
+          "code": "A00.100x001",
+          "name": "埃尔托生物型霍乱"
+        }
+      ],
+      "main_procedure": {
+        "code": "06.5101",
+        "name": "胸骨后甲状腺病损切除术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCK",
+      "adrg": "KD1",
+      "adrg_name": "甲状腺、甲状旁腺大手术",
+      "drg": "KD19",
+      "drg_name": "甲状腺、甲状旁腺大手术",
+      "complication": "MCC"
+    },
+    "natural_language": "男，40岁，因局限性淀粉样变性入院，行胸骨后甲状腺病损切除术（并发症：MCC成立——埃尔托生物型霍乱）。"
+  },
+  {
+    "id": "KD1-CC成立",
+    "purpose": "测试并发症-CC成立",
+    "path": "MDC匹配 → KD1 → 并发症判定(CC成立) → KD19",
+    "input": {
+      "gender": "男",
+      "age_days": 14600,
+      "main_diagnosis": {
+        "code": "E85.400x014",
+        "name": "局限性淀粉样变性"
+      },
+      "other_diagnoses": [
+        {
+          "code": "E11.600x051",
+          "name": "2型糖尿病伴血糖控制不佳"
+        }
+      ],
+      "main_procedure": {
+        "code": "06.5101",
+        "name": "胸骨后甲状腺病损切除术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCK",
+      "adrg": "KD1",
+      "adrg_name": "甲状腺、甲状旁腺大手术",
+      "drg": "KD19",
+      "drg_name": "甲状腺、甲状旁腺大手术",
+      "complication": "CC"
+    },
+    "natural_language": "男，40岁，因局限性淀粉样变性入院，行胸骨后甲状腺病损切除术（并发症：CC成立——2型糖尿病伴血糖控制不佳）。"
+  },
+  {
+    "id": "LF1-MCC成立",
+    "purpose": "测试并发症-MCC成立",
+    "path": "MDC匹配 → LF1 → 并发症判定(MCC成立) → LF11",
+    "input": {
+      "gender": "男",
+      "age_days": 25550,
+      "main_diagnosis": {
+        "code": "N34.100",
+        "name": "非特异性尿道炎"
+      },
+      "other_diagnoses": [
+        {
+          "code": "A00.100x001",
+          "name": "埃尔托生物型霍乱"
+        }
+      ],
+      "main_procedure": {
+        "code": "54.9300x003",
+        "name": "腹膜透析导丝法置管术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCL",
+      "adrg": "LF1",
+      "adrg_name": "肾透析相关手术",
+      "drg": "LF11",
+      "drg_name": "肾透析相关手术，伴严重合并症或并发症",
+      "complication": "MCC"
+    },
+    "natural_language": "男，70岁，因非特异性尿道炎入院，行腹膜透析导丝法置管术（并发症：MCC成立——埃尔托生物型霍乱）。"
+  },
+  {
+    "id": "LF1-CC成立",
+    "purpose": "测试并发症-CC成立",
+    "path": "MDC匹配 → LF1 → 并发症判定(CC成立) → LF15",
+    "input": {
+      "gender": "男",
+      "age_days": 25550,
+      "main_diagnosis": {
+        "code": "N34.100",
+        "name": "非特异性尿道炎"
+      },
+      "other_diagnoses": [
+        {
+          "code": "E11.600x051",
+          "name": "2型糖尿病伴血糖控制不佳"
+        }
+      ],
+      "main_procedure": {
+        "code": "54.9300x003",
+        "name": "腹膜透析导丝法置管术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCL",
+      "adrg": "LF1",
+      "adrg_name": "肾透析相关手术",
+      "drg": "LF15",
+      "drg_name": "肾透析相关手术，不伴严重合并症或并发症",
+      "complication": "CC"
+    },
+    "natural_language": "男，70岁，因非特异性尿道炎入院，行腹膜透析导丝法置管术（并发症：CC成立——2型糖尿病伴血糖控制不佳）。"
+  },
+  {
+    "id": "MJ1-CC成立",
+    "purpose": "测试并发症-CC成立",
+    "path": "MDC匹配 → MJ1 → 并发症判定(CC成立) → MJ19",
+    "input": {
+      "gender": "男",
+      "age_days": 25550,
+      "main_diagnosis": {
+        "code": "E29.900",
+        "name": "睾丸功能障碍"
+      },
+      "other_diagnoses": [
+        {
+          "code": "E11.600x051",
+          "name": "2型糖尿病伴血糖控制不佳"
+        }
+      ],
+      "main_procedure": {
+        "code": "54.7100",
+        "name": "腹裂（畸形）修补术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCM",
+      "adrg": "MJ1",
+      "adrg_name": "其他男性生殖系统手术",
+      "drg": "MJ19",
+      "drg_name": "其他男性生殖系统手术",
+      "complication": "CC"
+    },
+    "natural_language": "男，70岁，因睾丸功能障碍入院，行腹裂（畸形）修补术（并发症：CC成立——2型糖尿病伴血糖控制不佳）。"
+  },
+  {
+    "id": "MJ1-MCC被排除",
+    "purpose": "测试并发症-MCC被排除",
+    "path": "MDC匹配 → MJ1 → 并发症判定(MCC被排除) → MJ19",
+    "input": {
+      "gender": "男",
+      "age_days": 25550,
+      "main_diagnosis": {
+        "code": "E29.900",
+        "name": "睾丸功能障碍"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K86.000",
+          "name": "酒精性慢性胰腺炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "54.7100",
+        "name": "腹裂（畸形）修补术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCM",
+      "adrg": "MJ1",
+      "adrg_name": "其他男性生殖系统手术",
+      "drg": "MJ19",
+      "drg_name": "其他男性生殖系统手术",
+      "complication": "MCC"
+    },
+    "natural_language": "男，70岁，因睾丸功能障碍入院，行腹裂（畸形）修补术（并发症：MCC被排除——酒精性慢性胰腺炎）。"
+  },
+  {
+    "id": "MJ1-CC被排除",
+    "purpose": "测试并发症-CC被排除",
+    "path": "MDC匹配 → MJ1 → 并发症判定(CC被排除) → MJ19",
+    "input": {
+      "gender": "男",
+      "age_days": 25550,
+      "main_diagnosis": {
+        "code": "E29.900",
+        "name": "睾丸功能障碍"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K80.000x002",
+          "name": "胆囊结石伴急性胆囊炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "54.7100",
+        "name": "腹裂（畸形）修补术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCM",
+      "adrg": "MJ1",
+      "adrg_name": "其他男性生殖系统手术",
+      "drg": "MJ19",
+      "drg_name": "其他男性生殖系统手术",
+      "complication": "CC"
+    },
+    "natural_language": "男，70岁，因睾丸功能障碍入院，行腹裂（畸形）修补术（并发症：CC被排除——胆囊结石伴急性胆囊炎）。"
+  },
+  {
+    "id": "NF1-MCC成立",
+    "purpose": "测试并发症-MCC成立",
+    "path": "MDC匹配 → NF1 → 并发症判定(MCC成立) → NF19",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "N94.802",
+        "name": "女性盆腔血肿"
+      },
+      "other_diagnoses": [
+        {
+          "code": "A00.100x001",
+          "name": "埃尔托生物型霍乱"
+        }
+      ],
+      "main_procedure": {
+        "code": "67.3203",
+        "name": "宫腔镜子宫颈病损电切术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCN",
+      "adrg": "NF1",
+      "adrg_name": "外阴、阴道、宫颈手术",
+      "drg": "NF19",
+      "drg_name": "外阴、阴道、宫颈手术",
+      "complication": "MCC"
+    },
+    "natural_language": "男，50岁，因女性盆腔血肿入院，行宫腔镜子宫颈病损电切术（并发症：MCC成立——埃尔托生物型霍乱）。"
+  },
+  {
+    "id": "NF1-CC被排除",
+    "purpose": "测试并发症-CC被排除",
+    "path": "MDC匹配 → NF1 → 并发症判定(CC被排除) → NF19",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "N94.802",
+        "name": "女性盆腔血肿"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K80.000x002",
+          "name": "胆囊结石伴急性胆囊炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "67.3203",
+        "name": "宫腔镜子宫颈病损电切术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCN",
+      "adrg": "NF1",
+      "adrg_name": "外阴、阴道、宫颈手术",
+      "drg": "NF19",
+      "drg_name": "外阴、阴道、宫颈手术",
+      "complication": "CC"
+    },
+    "natural_language": "男，50岁，因女性盆腔血肿入院，行宫腔镜子宫颈病损电切术（并发症：CC被排除——胆囊结石伴急性胆囊炎）。"
+  },
+  {
+    "id": "QB1-MCC被排除",
+    "purpose": "测试并发症-MCC被排除",
+    "path": "MDC匹配 → QB1 → 并发症判定(MCC被排除) → QB19",
+    "input": {
+      "gender": "男",
+      "age_days": 21900,
+      "main_diagnosis": {
+        "code": "D76.301",
+        "name": "黄色肉芽肿"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K86.000",
+          "name": "酒精性慢性胰腺炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "41.9300",
+        "name": "副脾切除术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCQ",
+      "adrg": "QB1",
+      "adrg_name": "脾切除术",
+      "drg": "QB19",
+      "drg_name": "脾切除术",
+      "complication": "MCC"
+    },
+    "natural_language": "男，60岁，因黄色肉芽肿入院，行副脾切除术（并发症：MCC被排除——酒精性慢性胰腺炎）。"
+  },
+  {
+    "id": "QB1-CC被排除",
+    "purpose": "测试并发症-CC被排除",
+    "path": "MDC匹配 → QB1 → 并发症判定(CC被排除) → QB19",
+    "input": {
+      "gender": "男",
+      "age_days": 21900,
+      "main_diagnosis": {
+        "code": "D76.301",
+        "name": "黄色肉芽肿"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K80.000x002",
+          "name": "胆囊结石伴急性胆囊炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "41.9300",
+        "name": "副脾切除术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCQ",
+      "adrg": "QB1",
+      "adrg_name": "脾切除术",
+      "drg": "QB19",
+      "drg_name": "脾切除术",
+      "complication": "CC"
+    },
+    "natural_language": "男，60岁，因黄色肉芽肿入院，行副脾切除术（并发症：CC被排除——胆囊结石伴急性胆囊炎）。"
+  },
+  {
+    "id": "RK2-CC被排除",
+    "purpose": "测试并发症-CC被排除",
+    "path": "MDC匹配 → RK2 → 并发症判定(CC被排除) → RK25",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "C90.000x024",
+        "name": "多发性骨髓瘤（轻链к型）"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K80.000x002",
+          "name": "胆囊结石伴急性胆囊炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "99.2800x004",
+        "name": "肌肉注射抗肿瘤免疫抑制剂治疗"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCR",
+      "adrg": "RK2",
+      "adrg_name": "淋巴瘤、多发骨髓瘤化学治疗和/或其他治疗",
+      "drg": "RK25",
+      "drg_name": "淋巴瘤、多发骨髓瘤化学治疗和/或其他治疗，不伴严重合并症或并发症",
+      "complication": "CC"
+    },
+    "natural_language": "男，50岁，因多发性骨髓瘤（轻链к型）入院，行肌肉注射抗肿瘤免疫抑制剂治疗（并发症：CC被排除——胆囊结石伴急性胆囊炎）。"
+  },
+  {
+    "id": "RK2-MCC成立",
+    "purpose": "测试并发症-MCC成立",
+    "path": "MDC匹配 → RK2 → 并发症判定(MCC成立) → RK21",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "C90.000x024",
+        "name": "多发性骨髓瘤（轻链к型）"
+      },
+      "other_diagnoses": [
+        {
+          "code": "A00.100x001",
+          "name": "埃尔托生物型霍乱"
+        }
+      ],
+      "main_procedure": {
+        "code": "99.2800x004",
+        "name": "肌肉注射抗肿瘤免疫抑制剂治疗"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCR",
+      "adrg": "RK2",
+      "adrg_name": "淋巴瘤、多发骨髓瘤化学治疗和/或其他治疗",
+      "drg": "RK21",
+      "drg_name": "淋巴瘤、多发骨髓瘤化学治疗和/或其他治疗，伴严重合并症或并发症",
+      "complication": "MCC"
+    },
+    "natural_language": "男，50岁，因多发性骨髓瘤（轻链к型）入院，行肌肉注射抗肿瘤免疫抑制剂治疗（并发症：MCC成立——埃尔托生物型霍乱）。"
+  },
+  {
+    "id": "RN2-CC被排除",
+    "purpose": "测试并发症-CC被排除",
+    "path": "MDC匹配 → RN2 → 并发症判定(CC被排除) → RN25",
+    "input": {
+      "gender": "男",
+      "age_days": 25550,
+      "main_diagnosis": {
+        "code": "Z51.807",
+        "name": "恶性肿瘤术后靶向治疗"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K80.000x002",
+          "name": "胆囊结石伴急性胆囊炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "99.2800x006",
+        "name": "分子靶向治疗"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCR",
+      "adrg": "RN2",
+      "adrg_name": "恶性及增生性疾病的靶向、免疫治疗",
+      "drg": "RN25",
+      "drg_name": "恶性及增生性疾病的靶向、免疫治疗，不伴严重合并症或并发症",
+      "complication": "CC"
+    },
+    "natural_language": "男，70岁，因恶性肿瘤术后靶向治疗入院，行分子靶向治疗（并发症：CC被排除——胆囊结石伴急性胆囊炎）。"
+  },
+  {
+    "id": "RN2-MCC成立",
+    "purpose": "测试并发症-MCC成立",
+    "path": "MDC匹配 → RN2 → 并发症判定(MCC成立) → RN21",
+    "input": {
+      "gender": "男",
+      "age_days": 25550,
+      "main_diagnosis": {
+        "code": "Z51.807",
+        "name": "恶性肿瘤术后靶向治疗"
+      },
+      "other_diagnoses": [
+        {
+          "code": "A00.100x001",
+          "name": "埃尔托生物型霍乱"
+        }
+      ],
+      "main_procedure": {
+        "code": "99.2800x006",
+        "name": "分子靶向治疗"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCR",
+      "adrg": "RN2",
+      "adrg_name": "恶性及增生性疾病的靶向、免疫治疗",
+      "drg": "RN21",
+      "drg_name": "恶性及增生性疾病的靶向、免疫治疗，伴严重合并症或并发症",
+      "complication": "MCC"
+    },
+    "natural_language": "男，70岁，因恶性肿瘤术后靶向治疗入院，行分子靶向治疗（并发症：MCC成立——埃尔托生物型霍乱）。"
+  },
+  {
+    "id": "RN2-MCC被排除",
+    "purpose": "测试并发症-MCC被排除",
+    "path": "MDC匹配 → RN2 → 并发症判定(MCC被排除) → RN21",
+    "input": {
+      "gender": "男",
+      "age_days": 25550,
+      "main_diagnosis": {
+        "code": "Z51.807",
+        "name": "恶性肿瘤术后靶向治疗"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K86.000",
+          "name": "酒精性慢性胰腺炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "99.2800x006",
+        "name": "分子靶向治疗"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCR",
+      "adrg": "RN2",
+      "adrg_name": "恶性及增生性疾病的靶向、免疫治疗",
+      "drg": "RN21",
+      "drg_name": "恶性及增生性疾病的靶向、免疫治疗，伴严重合并症或并发症",
+      "complication": "MCC"
+    },
+    "natural_language": "男，70岁，因恶性肿瘤术后靶向治疗入院，行分子靶向治疗（并发症：MCC被排除——酒精性慢性胰腺炎）。"
+  },
+  {
+    "id": "VB1-CC被排除",
+    "purpose": "测试并发症-CC被排除",
+    "path": "MDC匹配 → VB1 → 并发症判定(CC被排除) → VB15",
+    "input": {
+      "gender": "男",
+      "age_days": 21900,
+      "main_diagnosis": {
+        "code": "T63.600x001",
+        "name": "接触海蜇后中毒"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K80.000x002",
+          "name": "胆囊结石伴急性胆囊炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "86.7407",
+        "name": "颌面局部皮瓣转移术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCV",
+      "adrg": "VB1",
+      "adrg_name": "损伤的皮肤移植",
+      "drg": "VB15",
+      "drg_name": "损伤的皮肤移植，不伴合并症或并发症",
+      "complication": "CC"
+    },
+    "natural_language": "男，60岁，因接触海蜇后中毒入院，行颌面局部皮瓣转移术（并发症：CC被排除——胆囊结石伴急性胆囊炎）。"
+  },
+  {
+    "id": "VB1-MCC成立",
+    "purpose": "测试并发症-MCC成立",
+    "path": "MDC匹配 → VB1 → 并发症判定(MCC成立) → VB15",
+    "input": {
+      "gender": "男",
+      "age_days": 21900,
+      "main_diagnosis": {
+        "code": "T63.600x001",
+        "name": "接触海蜇后中毒"
+      },
+      "other_diagnoses": [
+        {
+          "code": "A00.100x001",
+          "name": "埃尔托生物型霍乱"
+        }
+      ],
+      "main_procedure": {
+        "code": "86.7407",
+        "name": "颌面局部皮瓣转移术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCV",
+      "adrg": "VB1",
+      "adrg_name": "损伤的皮肤移植",
+      "drg": "VB15",
+      "drg_name": "损伤的皮肤移植，不伴合并症或并发症",
+      "complication": "MCC"
+    },
+    "natural_language": "男，60岁，因接触海蜇后中毒入院，行颌面局部皮瓣转移术（并发症：MCC成立——埃尔托生物型霍乱）。"
+  },
+  {
+    "id": "VB1-CC成立",
+    "purpose": "测试并发症-CC成立",
+    "path": "MDC匹配 → VB1 → 并发症判定(CC成立) → VB15",
+    "input": {
+      "gender": "男",
+      "age_days": 21900,
+      "main_diagnosis": {
+        "code": "T63.600x001",
+        "name": "接触海蜇后中毒"
+      },
+      "other_diagnoses": [
+        {
+          "code": "E11.600x051",
+          "name": "2型糖尿病伴血糖控制不佳"
+        }
+      ],
+      "main_procedure": {
+        "code": "86.7407",
+        "name": "颌面局部皮瓣转移术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCV",
+      "adrg": "VB1",
+      "adrg_name": "损伤的皮肤移植",
+      "drg": "VB15",
+      "drg_name": "损伤的皮肤移植，不伴合并症或并发症",
+      "complication": "CC"
+    },
+    "natural_language": "男，60岁，因接触海蜇后中毒入院，行颌面局部皮瓣转移术（并发症：CC成立——2型糖尿病伴血糖控制不佳）。"
+  },
+  {
+    "id": "VC1-CC被排除",
+    "purpose": "测试并发症-CC被排除",
+    "path": "MDC匹配 → VC1 → 并发症判定(CC被排除) → VC15",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "T09.100",
+        "name": "躯干开放性伤口"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K80.000x002",
+          "name": "胆囊结石伴急性胆囊炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "79.6601",
+        "name": "胫骨开放性骨折清创术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCV",
+      "adrg": "VC1",
+      "adrg_name": "与损伤有关的清创术",
+      "drg": "VC15",
+      "drg_name": "与损伤有关的清创术，不伴合并症或并发症",
+      "complication": "CC"
+    },
+    "natural_language": "男，50岁，因躯干开放性伤口入院，行胫骨开放性骨折清创术（并发症：CC被排除——胆囊结石伴急性胆囊炎）。"
+  },
+  {
+    "id": "VC1-MCC被排除",
+    "purpose": "测试并发症-MCC被排除",
+    "path": "MDC匹配 → VC1 → 并发症判定(MCC被排除) → VC15",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "T09.100",
+        "name": "躯干开放性伤口"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K86.000",
+          "name": "酒精性慢性胰腺炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "79.6601",
+        "name": "胫骨开放性骨折清创术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCV",
+      "adrg": "VC1",
+      "adrg_name": "与损伤有关的清创术",
+      "drg": "VC15",
+      "drg_name": "与损伤有关的清创术，不伴合并症或并发症",
+      "complication": "MCC"
+    },
+    "natural_language": "男，50岁，因躯干开放性伤口入院，行胫骨开放性骨折清创术（并发症：MCC被排除——酒精性慢性胰腺炎）。"
+  },
+  {
+    "id": "WB3-CC被排除",
+    "purpose": "测试并发症-CC被排除",
+    "path": "MDC匹配 → WB3 → 并发症判定(CC被排除) → WB39",
+    "input": {
+      "gender": "男",
+      "age_days": 18250,
+      "main_diagnosis": {
+        "code": "T21.500x021",
+        "name": "胸壁一度腐蚀伤"
+      },
+      "other_diagnoses": [
+        {
+          "code": "K80.000x002",
+          "name": "胆囊结石伴急性胆囊炎"
+        }
+      ],
+      "main_procedure": {
+        "code": "86.9100x001",
+        "name": "供体皮肤切除术"
+      },
+      "other_procedures": []
+    },
+    "expected": {
+      "mdc": "MDCW",
+      "adrg": "WB3",
+      "adrg_name": "烧伤面积＜30%或其他烧伤，伴有手术操作",
+      "drg": "WB39",
+      "drg_name": "烧伤面积＜30%或其他烧伤，伴有手术操作",
+      "complication": "CC"
+    },
+    "natural_language": "男，50岁，因胸壁一度腐蚀伤入院，合并累及体表10%以下的烧伤、累及体表10%~19%的烧伤，行供体皮肤切除术（并发症：CC被排除——胆囊结石伴急性胆囊炎）。"
+  }
+]

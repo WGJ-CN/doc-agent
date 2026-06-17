@@ -42,7 +42,8 @@ async def browse_folder():
 
 def _open_folder_dialog():
     if os.name == "nt":
-        return _open_folder_dialog_windows()
+        path = _open_folder_dialog_tk()  # tkinter 秒出，PowerShell 做降级
+        return path or _open_folder_dialog_windows()
     else:
         return _open_folder_dialog_tk()
 
@@ -202,11 +203,11 @@ async def download_task(
         raise HTTPException(status_code=400, detail="任务尚未完成")
 
     if task.doc_type == "测试用例":
-        file_path = os.path.join(settings.output_dir, f"{task_id}.json")
+        file_path = os.path.join(settings.output_dir, f"{task_id}.md")
         if not os.path.exists(file_path):
             raise HTTPException(status_code=404, detail="文件不存在")
-        filename = f"{task.doc_type}_{task_id}.json"
-        return FileResponse(file_path, media_type="application/json", filename=filename)
+        filename = f"{task.doc_type}_{task_id}.md"
+        return FileResponse(file_path, media_type="text/markdown", filename=filename)
     else:
         file_path = os.path.join(settings.output_dir, f"{task_id}.md")
         if not os.path.exists(file_path):

@@ -8,6 +8,7 @@ import openai
 import json
 import os
 import sys
+import random
 
 DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY", "")
 DEEPSEEK_BASE_URL = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
@@ -139,20 +140,26 @@ def _drg_build_cases() -> list:
         if not c.startswith("MDC"):
             by_prefix.setdefault(c[0], []).append(c)
 
+    # 随机选取 ADRG：MDCA 固定几个，其余每类随机抽
     picks = []
     for c in ["AA1", "AB1", "AH2"]:
         if c in rules:
             picks.append(c)
     if "P" in by_prefix:
-        picks.append(by_prefix["P"][0])
+        picks.append(random.choice(by_prefix["P"]))
+
+    # 每个 MDC 随机抽 1 个有手术的 ADRG
     for p in "BCDEFGHIJKLMNQRSTUVWX":
         if p in by_prefix:
-            for c in by_prefix[p]:
-                entry = rules[c]
-                if _codes(entry.get("包含以下主要手术或操作", [])) or "同时包含以下手术或操作" in entry:
-                    picks.append(c)
-                    break
-    picks = picks[:12]
+            candidates = [c for c in by_prefix[p]
+                          if _codes(rules[c].get("包含以下主要手术或操作", []))
+                          or "同时包含以下手术或操作" in rules[c]]
+            if candidates:
+                picks.append(random.choice(candidates))
+
+    # 随机选取 ~10 个
+    random.shuffle(picks)
+    picks = picks[:random.randint(8, 12)]
 
     cases = []
     for code in picks:
@@ -183,11 +190,13 @@ def _drg_build_cases() -> list:
         ops = _codes(entry.get("手术或操作1", []))[:2]
 
         if not md and code[0] in mdc_diag:
-            md = mdc_diag[code[0]][0]
-        # 纯手术 ADRG 配真实诊断（避免 LLM 瞎编）
+            md = random.choice(mdc_diag[code[0]])
         if not md:
             fallback = {"AA1": "J96.900", "AB1": "K72.900", "AH2": "J12.800"}
             md = fallback.get(code, "Z00.000")
+        # MDCP 补新生儿诊断
+        if code.startswith("P") and md == "Z00.000":
+            md = random.choice(["P07.000", "P05.000", "P22.000"])
         if code == "AH2":
             ods, mp, ops = ["Z93.000"], "96.7201", []
 
@@ -229,14 +238,18 @@ def _drg_build_cases() -> list:
         ("MCC成立", "A00.100x001"), ("CC成立", "E11.600x051"),
         ("NONE", "E11.900"), ("MCC被排除", "K86.000"), ("CC被排除", "K80.000x002"),
     ]
-    for case in cases[:]:
+    random.shuffle(comp_templates)
+    # 随机选 1~2 个 ADRG 做并发症变体
+    eligible = [c for c in cases if c["id"] not in ("AH2", "ZZ1", "PB1")
+                and c["input"]["main_procedure"]["code"]]
+    random.shuffle(eligible)
+    for case in eligible[:random.randint(1, 2)]:
         adrg = case["id"]
         inp = case["input"]
         md = inp["main_diagnosis"]["code"]
         mp = inp["main_procedure"]["code"]
-        if not mp or adrg in ("AH2", "ZZ1", "PB1"):
-            continue
-        for label, od in comp_templates:
+        # 随机选 2~4 个并发症模板
+        for label, od in random.sample(comp_templates, min(len(comp_templates), random.randint(2, 4))):
             try:
                 r = group_full(md, [od], mp, [], inp["age_days"],
                                rules, drg_table, mcc_map, cc_map, excl_clean)
@@ -370,10 +383,15 @@ def generate_testcase_for_topic(material_file: str = None, output_md: str = None
     print(f"检测: {'DRG项目 → 知识驱动+引擎验证' if is_drg else '通用项目 → LLM生成'}")
 
     if is_drg:
-        print("\n[DRG] 程序构造 + ruzu.py 验算...")
-        cases = _drg_build_cases()
-        print(f"\n[NL] 写自然语言...")
-        _add_nl(cases)
+        print("\n[DRG] 从用例池随机抽取...")
+        pool_path = os.path.join(os.path.dirname(__file__), "drg_test_pool.json")
+        if not os.path.exists(pool_path):
+            print("[FAIL] 用例池不存在，请先运行 _build_drg_pool.py")
+            return None
+        pool = json.load(open(pool_path, encoding="utf-8"))
+        random.shuffle(pool)
+        cases = pool[:10]
+        print(f"  从 {len(pool)} 个用例中抽取 {len(cases)} 个")
     else:
         print("\n[通用] LLM 两阶段生成...")
         outline = _generic_outline(material)
